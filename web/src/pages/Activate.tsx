@@ -83,7 +83,7 @@ export default function Activate() {
         onClick={toggleLanguage}
         title={language === "zh-CN" ? "Switch to English" : "切换为中文"}
       >
-        {language === "zh-CN" ? "EN" : "中文"}
+        {language === "zh-CN" ? "en" : "zh"}
       </Button>
       <div className="activate-header">
         <Brand />

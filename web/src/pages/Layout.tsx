@@ -229,7 +229,7 @@ export default function AppLayout() {
                 toggleLanguage();
               }}
             >
-              {language === "zh-CN" ? "EN" : "中文"}
+              {language === "zh-CN" ? "en" : "zh"}
             </Button>
             <Avatar
               className="emoji-avatar"
