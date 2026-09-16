@@ -1,0 +1,277 @@
+openapi: 3.1.0
+info:
+  title: 云渡文件交换平台 API
+  version: 1.0.0-dev
+  description: V1.0 契约基线。未实现的业务操作不会返回假成功。
+servers: [{url: /api/v1}]
+tags:
+  - {name: Runtime}
+  - {name: Identity}
+  - {name: Requests}
+  - {name: Workflow}
+  - {name: Administration}
+  - {name: Monitoring}
+paths:
+  /runtime:
+    get:
+      tags: [Runtime]
+      operationId: getRuntime
+      responses:
+        '200': {description: 可信入口与公开运行参数, content: {application/json: {schema: {$ref: '#/components/schemas/Runtime'}}}}
+  /auth/password:
+    post:
+      tags: [Identity]
+      operationId: verifyPassword
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/PasswordLogin'}}}}
+      responses:
+        '200': {description: 仅可用于第二步的短期 challenge, content: {application/json: {schema: {$ref: '#/components/schemas/LoginChallenge'}}}}
+        '401': {$ref: '#/components/responses/Problem'}
+        '429': {$ref: '#/components/responses/Problem'}
+  /auth/activate:
+    post:
+      tags: [Identity]
+      operationId: activateAccount
+      requestBody: {required: true, content: {application/json: {schema: {type: object, additionalProperties: false, required: [token, password], properties: {token: {type: string}, password: {type: string, minLength: 12, maxLength: 128}}}}}}
+      responses:
+        '200': {description: 返回十分钟绑定凭据、内部生成的二维码和手工秘钥；仅本次显示}
+        '400': {$ref: '#/components/responses/Problem'}
+  /auth/mfa/confirm:
+    post:
+      tags: [Identity]
+      operationId: confirmMfaBinding
+      requestBody: {required: true, content: {application/json: {schema: {type: object, additionalProperties: false, required: [binding_token, code], properties: {binding_token: {type: string}, code: {type: string, pattern: '^\\d{6}$'}}}}}}
+      responses:
+        '204': {description: MFA 已激活；必须重新进行完整登录}
+        '400': {$ref: '#/components/responses/Problem'}
+  /auth/mfa/rebind:
+    post:
+      tags: [Identity]
+      operationId: beginMfaRebind
+      description: 经组织管理员发起、安全管理员独立审核后，用户凭一次性重绑凭据和正确密码进入绑定流程。
+      responses: {'200': {description: 返回十分钟绑定凭据及内部二维码}, '400': {$ref: '#/components/responses/Problem'}}
+  /auth/me:
+    get:
+      tags: [Identity]
+      security: [{sessionCookie: []}]
+      operationId: getCurrentUser
+      responses: {'200': {description: 当前会话用户}, '401': {$ref: '#/components/responses/Problem'}}
+  /auth/logout:
+    post:
+      tags: [Identity]
+      security: [{sessionCookie: []}]
+      operationId: logout
+      responses: {'204': {description: 当前会话已撤销}}
+  /auth/logout-all:
+    post:
+      tags: [Identity]
+      security: [{sessionCookie: []}]
+      operationId: logoutAll
+      responses: {'204': {description: session_version 已提升，全部会话撤销}}
+  /auth/password/change:
+    post:
+      tags: [Identity]
+      security: [{sessionCookie: []}]
+      operationId: changePassword
+      responses: {'204': {description: 密码已更改且全部会话撤销}, '400': {$ref: '#/components/responses/Problem'}}
+  /admin/mfa-recoveries:
+    post:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: initiateMfaRecovery
+      responses: {'201': {description: 组织管理员完成线下核验后创建待审核恢复请求}, '403': {$ref: '#/components/responses/Problem'}}
+  /admin/mfa-recoveries/{recovery_id}/approve:
+    post:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: approveMfaRecovery
+      parameters:
+        - {in: path, name: recovery_id, required: true, schema: {type: string}}
+      responses: {'200': {description: 独立安全管理员审核；一次性重绑凭据仅显示一次}, '403': {$ref: '#/components/responses/Problem'}}
+  /auth/totp:
+    post:
+      tags: [Identity]
+      operationId: verifyTotp
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/TotpLogin'}}}}
+      responses:
+        '204': {description: 会话已建立，token 仅通过 Secure HttpOnly Cookie 返回}
+        '401': {$ref: '#/components/responses/Problem'}
+        '409': {$ref: '#/components/responses/Problem'}
+  /requests:
+    get:
+      tags: [Requests]
+      operationId: listRequests
+      parameters:
+        - {in: query, name: cursor, schema: {type: string}}
+        - {in: query, name: limit, schema: {type: integer, minimum: 1, maximum: 100, default: 20}}
+      responses: {'200': {description: 当前用户授权范围内的申请}, '401': {$ref: '#/components/responses/Problem'}}
+    post:
+      tags: [Requests]
+      operationId: createRequest
+      parameters: [{$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/CreateRequest'}}}}
+      responses: {'201': {description: 草稿已创建}, '403': {$ref: '#/components/responses/Problem'}, '409': {$ref: '#/components/responses/Problem'}}
+  /requests/{request_id}/submit:
+    post:
+      tags: [Requests]
+      operationId: submitRequest
+      parameters: [{$ref: '#/components/parameters/RequestId'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [expected_version, confirmation], properties: {expected_version: {type: integer}, confirmation: {type: boolean, const: true}}}}}}
+      responses: {'200': {description: 冻结清单与流程版本后提交}, '409': {$ref: '#/components/responses/Problem'}}
+  /workflow-tasks/{task_id}/decisions:
+    post:
+      tags: [Workflow]
+      operationId: decideTask
+      parameters: [{$ref: '#/components/parameters/TaskId'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/Decision'}}}}
+      responses: {'200': {description: 当前办理人的决定}, '403': {$ref: '#/components/responses/Problem'}, '409': {$ref: '#/components/responses/Problem'}}
+  /admin/workflow-tasks/{task_id}/act-on-behalf:
+    post:
+      tags: [Administration]
+      operationId: actOnBehalf
+      parameters: [{$ref: '#/components/parameters/TaskId'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      requestBody: {required: true, content: {application/json: {schema: {$ref: '#/components/schemas/DelegatedDecision'}}}}
+      responses: {'200': {description: 代办决定及更新后状态}, '403': {$ref: '#/components/responses/Problem'}, '409': {$ref: '#/components/responses/Problem'}}
+  /admin/exchange-channels:
+    get:
+      tags: [Administration]
+      operationId: listExchangeChannels
+      responses: {'200': {description: 已发布的双向交换渠道}}
+  /admin/exchange-channels/{direction}:
+    put:
+      tags: [Administration]
+      operationId: publishExchangeChannel
+      parameters:
+        - {in: path, name: direction, required: true, schema: {enum: [PROD_TO_OFFICE, OFFICE_TO_PROD]}}
+      responses: {'204': {description: 渠道配置已通过乐观锁发布}, '409': {$ref: '#/components/responses/Problem'}}
+  /admin/transfers:
+    get:
+      tags: [Administration]
+      operationId: listTransfers
+      responses: {'200': {description: 最近传输任务及尝试状态}}
+  /admin/transfers/{transfer_id}/retry:
+    post:
+      tags: [Administration]
+      operationId: retryTransfer
+      parameters:
+        - {in: path, name: transfer_id, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      responses: {'204': {description: 失败任务已重新排队}, '409': {$ref: '#/components/responses/Problem'}}
+  /downloads/available:
+    get:
+      tags: [Requests]
+      operationId: listAvailableDownloads
+      responses: {'200': {description: 当前申请人在当前目标入口可领取的精确目标文件}}
+  /files/{file_id}/download-grants:
+    post:
+      tags: [Requests]
+      operationId: issueDownloadGrant
+      parameters:
+        - {in: path, name: file_id, required: true, schema: {type: string}}
+        - {$ref: '#/components/parameters/IdempotencyKey'}
+      requestBody: {required: true, content: {application/json: {schema: {type: object, required: [expected_version], properties: {expected_version: {type: integer, minimum: 1}}}}}}
+      responses: {'201': {description: 返回绑定当前用户与会话、60 秒内单次启动的 grant}, '403': {$ref: '#/components/responses/Problem'}, '429': {$ref: '#/components/responses/Problem'}}
+  /requests/{request_id}/downloads:
+    get:
+      tags: [Requests]
+      operationId: listDownloadReceipts
+      parameters: [{$ref: '#/components/parameters/RequestId'}]
+      responses: {'200': {description: 本人申请的下载发送记录}}
+  /requests/{request_id}/revoke:
+    post:
+      tags: [Administration]
+      operationId: revokeReleasedRequest
+      parameters: [{$ref: '#/components/parameters/RequestId'}, {$ref: '#/components/parameters/IdempotencyKey'}]
+      responses: {'204': {description: 已发布申请已撤销，新授权立即拒绝且在途流在复核周期内停止}, '409': {$ref: '#/components/responses/Problem'}}
+  /monitoring/zabbix:
+    get:
+      tags: [Monitoring]
+      security: [{monitoringBearer: []}]
+      operationId: getZabbixSnapshot
+      responses:
+        '200': {description: schema_version=1 的持久聚合快照}
+        '401': {$ref: '#/components/responses/Problem'}
+        '403': {$ref: '#/components/responses/Problem'}
+        '503': {$ref: '#/components/responses/Problem'}
+  /audit/events:
+    get:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: listAuditEvents
+      parameters:
+        - {in: query, name: from, required: true, schema: {type: string, format: date-time}}
+        - {in: query, name: to, required: true, schema: {type: string, format: date-time}}
+        - {in: query, name: cursor, schema: {type: integer, minimum: 0}}
+      responses: {'200': {description: 索引游标审计元数据页}, '400': {$ref: '#/components/responses/Problem'}}
+  /notifications:
+    get:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: listInboxNotifications
+      responses: {'200': {description: 当前用户的站内通知}}
+  /notifications/{notification_id}/read:
+    post:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: readInboxNotification
+      parameters: [{in: path, name: notification_id, required: true, schema: {type: string}}]
+      responses: {'204': {description: 仅当前用户的该条通知标为已读}, '404': {$ref: '#/components/responses/Problem'}}
+  /admin/monitoring/tokens:
+    post:
+      tags: [Monitoring]
+      security: [{sessionCookie: []}]
+      operationId: createMonitoringToken
+      responses: {'201': {description: 只在本次响应显示明文令牌}}
+  /admin/monitoring/tokens/{token_id}/revoke:
+    post:
+      tags: [Monitoring]
+      security: [{sessionCookie: []}]
+      operationId: revokeMonitoringToken
+      parameters: [{in: path, name: token_id, required: true, schema: {type: string}}]
+      responses: {'204': {description: 令牌已撤销}}
+  /requests/{request_id}/ai-suggestions:
+    post:
+      tags: [Requests]
+      security: [{sessionCookie: []}]
+      operationId: createAiPurposeSuggestion
+      description: 仅本人 INTERNAL 草稿；只向已发布模型发送本次明确提交的用途文字，响应不会自动保存。
+      parameters: [{$ref: '#/components/parameters/RequestId'}]
+      requestBody: {required: true, content: {application/json: {schema: {type: object, additionalProperties: false, required: [text], properties: {text: {type: string, minLength: 1, maxLength: 4000}}}}}}
+      responses: {'200': {description: 不可信、可编辑的纯文字建议}, '403': {$ref: '#/components/responses/Problem'}, '429': {$ref: '#/components/responses/Problem'}}
+  /admin/ai-integrations:
+    post:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: createAiIntegrationDraft
+      responses: {'201': {description: 默认关闭的 LLM 集成草稿}}
+  /admin/recovery-guard:
+    get:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: getRecoveryGuard
+      responses: {'200': {description: 数据库恢复冻结状态}}
+  /admin/guards/release-freeze:
+    post:
+      tags: [Administration]
+      security: [{sessionCookie: []}]
+      operationId: releaseRecoveryFreeze
+      description: 仅安全管理员，要求处置说明、expected_version 和五分钟内 MFA。
+      responses: {'204': {description: 恢复核验完成，解除后续发布与下载冻结}, '409': {$ref: '#/components/responses/Problem'}}
+components:
+  securitySchemes:
+    sessionCookie: {type: apiKey, in: cookie, name: __Host-yundu-session}
+    monitoringBearer: {type: http, scheme: bearer}
+  parameters:
+    IdempotencyKey: {in: header, name: Idempotency-Key, required: true, schema: {type: string, minLength: 16, maxLength: 128}}
+    RequestId: {in: path, name: request_id, required: true, schema: {type: string, format: uuid}}
+    TaskId: {in: path, name: task_id, required: true, schema: {type: string, format: uuid}}
+  responses:
+    Problem: {description: RFC 9457 风格错误, content: {application/problem+json: {schema: {$ref: '#/components/schemas/Problem'}}}}
+  schemas:
+    Runtime: {type: object, required: [product_name, product_short_name, product_tagline, portal_zone, version, limits], properties: {product_name: {type: string, const: 云渡文件交换平台}, product_short_name: {type: string, const: 云渡}, product_tagline: {type: string, const: 生产与办公网络文件交换及审批}, portal_zone: {enum: [OFFICE, PRODUCTION, UNKNOWN]}, version: {type: string}, limits: {type: object}}}
+    PasswordLogin: {type: object, additionalProperties: false, required: [username, password], properties: {username: {type: string, pattern: '^[a-z0-9._-]{3,64}$'}, password: {type: string, minLength: 12, maxLength: 128}}}
+    LoginChallenge: {type: object, required: [challenge, expires_at], properties: {challenge: {type: string}, expires_at: {type: string, format: date-time}}}
+    TotpLogin: {type: object, additionalProperties: false, required: [challenge, code], properties: {challenge: {type: string}, code: {type: string, pattern: '^\\d{6}$'}}}
+    CreateRequest: {type: object, additionalProperties: false, required: [group_id, direction, classification, purpose], properties: {group_id: {type: string, format: uuid}, direction: {enum: [PROD_TO_OFFICE, OFFICE_TO_PROD]}, classification: {enum: [INTERNAL, SENSITIVE, HIGH]}, purpose: {type: string, minLength: 10, maxLength: 4000}, business_system_id: {type: string, format: uuid}, external_ticket: {type: string, maxLength: 128}}}
+    Decision: {type: object, additionalProperties: false, required: [decision, expected_version], properties: {decision: {enum: [APPROVE, REJECT]}, comment: {type: string, maxLength: 2000}, expected_version: {type: integer, minimum: 1}}}
+    DelegatedDecision: {type: object, additionalProperties: false, required: [decision, reason, expected_version], properties: {decision: {enum: [APPROVE, REJECT]}, reason: {type: string, minLength: 10, maxLength: 500}, expected_version: {type: integer, minimum: 1}}}
+    Problem: {type: object, required: [title, status, code, detail], properties: {type: {type: string}, title: {type: string}, status: {type: integer}, code: {type: string}, detail: {type: string}, trace_id: {type: string}}}

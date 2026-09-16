@@ -1,0 +1,9 @@
+9e98b9237f86bc43ccb2f517dd82923a55b64d10d197c5e01a6760402c30daf6  01-documents/云渡文件交换平台 产品需求与系统设计 V1.0 开发定稿 含Zabbix监控.docx
+aaf5085fad92009accc8ceace6a81b7ed34a78881309b85f5036a0086a5479ba  02-brand/云渡-logo-图标.svg
+c2f579d8c1aa5a4bda6084dd9e8db62ba4a2a8731320a1b18635d1dda355ae9a  02-brand/云渡-logo-横版.svg
+48073f300b901f7190bc0b0eb7761d7b8727984646b305ddd2144a66ac7c1ab8  02-brand/云渡-logo-深色背景版.svg
+47c8da358123d6569a6825b3d8d8879c626dee4553e854acef358fb15cb99b7c  02-brand/云渡-logo-预览.png
+b6ba935d2640670fcfb9b8653a6a34603571796a0a02ea0401ab6df11dbf433c  03-monitoring/云渡-Zabbix-指标响应示例.json
+6d74c1d57d4ef6480bd36a557cceaa60a94dbadc407141e5268364af7ee64cb7  03-monitoring/云渡-Zabbix7.0-HTTP监控模板.json
+ca7937f0f637263b0537546867808e9ba9f8e08a24a4b1fd92345c9ec3f9719e  开始阅读.txt
+f36cee44ec25d63ae171b98db2d9c023fa00cb6bb40ed1c9c908d66255aa3469  给Codex的开发指令.txt

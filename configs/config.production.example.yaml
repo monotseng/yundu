@@ -1,0 +1,48 @@
+environment: production
+
+server:
+  listen_address: "127.0.0.1:9080"
+  public_base_url: "https://yundu-admin.example.internal"
+  shutdown_timeout: 120s
+  trusted_proxies: ["10.20.30.0/24"]
+
+database:
+  host: "mysql.internal"
+  port: 3306
+  name: "yundu"
+  username: "yundu_app"
+  password: "${YUNDU_DB_PASSWORD}"
+  parameters: "charset=utf8mb4&collation=utf8mb4_0900_ai_ci&parseTime=true&loc=UTC&time_zone=%27%2B00%3A00%27"
+  max_open: 20
+  max_idle: 5
+  max_idle_time: 5m
+  max_lifetime: 30m
+  connect_timeout: 5s
+
+security:
+  master_key: "${YUNDU_MASTER_KEY}"
+  cookie_secure: true
+  trust_portal_header_from: ["10.20.30.0/24"]
+
+antivirus:
+  enabled: false
+  address: ""
+  timeout: 10m
+
+portals:
+  office:
+    zone: OFFICE
+    origin: "https://yundu-office.example.internal"
+  production:
+    zone: PRODUCTION
+    origin: "https://yundu-production.example.internal"
+
+limits:
+  json_body_bytes: 1048576
+  office_file_bytes: 31457280
+  production_file_bytes: 104857600
+  files_per_request: 5
+  office_request_bytes: 157286400
+  uploads: 6
+  downloads: 6
+  copies: 2

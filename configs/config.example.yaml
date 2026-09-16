@@ -1,0 +1,48 @@
+environment: development
+
+server:
+  listen_address: "127.0.0.1:9080"
+  public_base_url: "http://127.0.0.1:9080"
+  shutdown_timeout: 120s
+  trusted_proxies: []
+
+database:
+  host: "127.0.0.1"
+  port: 3306
+  name: "yundu"
+  username: "yundu"
+  password: "${YUNDU_DB_PASSWORD}"
+  parameters: "charset=utf8mb4&collation=utf8mb4_0900_ai_ci&parseTime=true&loc=UTC&time_zone=%27%2B00%3A00%27"
+  max_open: 20
+  max_idle: 5
+  max_idle_time: 5m
+  max_lifetime: 30m
+  connect_timeout: 5s
+
+security:
+  master_key: "${YUNDU_MASTER_KEY}"
+  cookie_secure: false
+  trust_portal_header_from: []
+
+antivirus:
+  enabled: false
+  address: ""
+  timeout: 10m
+
+portals:
+  office:
+    zone: OFFICE
+    origin: "http://office.localhost:9080"
+  production:
+    zone: PRODUCTION
+    origin: "http://production.localhost:9080"
+
+limits:
+  json_body_bytes: 1048576
+  office_file_bytes: 31457280
+  production_file_bytes: 104857600
+  files_per_request: 5
+  office_request_bytes: 157286400
+  uploads: 6
+  downloads: 6
+  copies: 2

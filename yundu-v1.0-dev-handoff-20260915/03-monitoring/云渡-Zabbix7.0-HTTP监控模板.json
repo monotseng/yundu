@@ -1,0 +1,1076 @@
+{
+  "zabbix_export": {
+    "version": "7.0",
+    "template_groups": [
+      {
+        "uuid": "9aabdd2986af5a1daf6dcb1d3270bb7b",
+        "name": "Templates/Yundu"
+      }
+    ],
+    "templates": [
+      {
+        "uuid": "fe54f10da2c55152bea82d519778e75e",
+        "template": "Yundu by HTTP",
+        "name": "云渡文件交换平台 by HTTP",
+        "description": "云渡v1监控契约；Zabbix 7.0 HTTP采集，无终端Agent。导入后配置URL、秘密TOKEN及来源白名单。模板为交付设计，需在实际Zabbix 7.0导入联调。",
+        "groups": [
+          {
+            "name": "Templates/Yundu"
+          }
+        ],
+        "items": [
+          {
+            "uuid": "3b358c3557145042bfd3cb2f590fb173",
+            "name": "云渡：读取HTTP监控快照",
+            "type": "HTTP_AGENT",
+            "key": "yundu.metrics.raw",
+            "delay": "30s",
+            "history": "1d",
+            "value_type": "TEXT",
+            "trends": "0",
+            "url": "{$YUNDU.URL}/api/v1/monitoring/zabbix",
+            "http_proxy": "{$YUNDU.HTTP.PROXY}",
+            "timeout": "10s",
+            "status_codes": "200",
+            "follow_redirects": "NO",
+            "verify_peer": "YES",
+            "verify_host": "YES",
+            "headers": [
+              {
+                "name": "Authorization",
+                "value": "Bearer {$YUNDU.TOKEN}"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "preprocessing": [
+              {
+                "type": "JAVASCRIPT",
+                "parameters": [
+                  "var d=JSON.parse(value); if(d.schema_version!==1) throw \"Unsupported metrics schema\"; var keys=[\"snapshot_valid\", \"snapshot_updated_at\", \"open_policy_breach_incidents\", \"open_integrity_incidents\", \"cross_zone_denied_5m\", \"unauthorized_download_denied_5m\", \"text_denied_5m\", \"size_denied_5m\", \"quota_denied_5m\", \"resource_busy_5m\", \"max_user_upload_attempts_5m\", \"max_user_download_starts_5m\", \"max_user_upload_bytes_1h\", \"max_user_download_bytes_1h\", \"active_uploads\", \"active_downloads\", \"active_copies\", \"audit_aggregation_lag_seconds\"]; for(var i=0;i<keys.length;i++){var v=d[keys[i]]; if(typeof v!==\"number\" || !isFinite(v) || v<0 || Math.floor(v)!==v) throw \"Missing or invalid metric: \"+keys[i];} return JSON.stringify(d);"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "health"
+              }
+            ],
+            "triggers": [
+              {
+                "uuid": "38ca6a7a57235874bcc6ac59e0260b67",
+                "name": "云渡：监控接口无有效数据",
+                "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1",
+                "priority": "HIGH"
+              }
+            ]
+          },
+          {
+            "uuid": "5434f7f055695ecba949f7de73f188a3",
+            "name": "云渡：指标窗口已完整建立",
+            "type": "DEPENDENT",
+            "key": "yundu.snapshot_valid",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.snapshot_valid"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "health"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：监控聚合窗口尚未就绪",
+                "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0",
+                "priority": "WARNING",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  }
+                ],
+                "uuid": "3bb3daa9be255a42b19cb274eb9ed882",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "health"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "c1804627893d599faa16639545a49ebc",
+            "name": "云渡：指标聚合时间",
+            "type": "DEPENDENT",
+            "key": "yundu.snapshot_updated_at",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.snapshot_updated_at"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "health"
+              }
+            ],
+            "units": "unixtime",
+            "triggers": [
+              {
+                "name": "云渡：指标快照过期或时钟异常",
+                "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0",
+                "priority": "HIGH",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  }
+                ],
+                "uuid": "5faa7fedb81d58d78bf07eb634d541d6",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "health"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "4c501e234f725c379626a74e218f9dc2",
+            "name": "云渡：未关闭的违规放行事件",
+            "type": "DEPENDENT",
+            "key": "yundu.open_policy_breach_incidents",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.open_policy_breach_incidents"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "critical"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：未关闭的违规放行事件",
+                "expression": "last(/Yundu by HTTP/yundu.open_policy_breach_incidents)>0",
+                "priority": "DISASTER",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "description": "事件在云渡中完成调查并关闭后才清零；不是指被系统成功拦截的普通请求。",
+                "uuid": "606f325df58b5ff08e9a778933b20343",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "critical"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "91517b73d2c35565b58c8cf59cb599c6",
+            "name": "云渡：未关闭的文件哈希异常",
+            "type": "DEPENDENT",
+            "key": "yundu.open_integrity_incidents",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.open_integrity_incidents"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "critical"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：未关闭的文件哈希异常",
+                "expression": "last(/Yundu by HTTP/yundu.open_integrity_incidents)>0",
+                "priority": "HIGH",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "description": "事件在云渡中完成调查并关闭后才清零；不是指被系统成功拦截的普通请求。",
+                "uuid": "5e32d1e848035a2d8c9e4639893ca046",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "critical"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "20cbda35d34c5184a01587338287f544",
+            "name": "云渡：近5分钟跨安全域操作被拒绝",
+            "type": "DEPENDENT",
+            "key": "yundu.cross_zone_denied_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.cross_zone_denied_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "security"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：近5分钟跨安全域操作被拒绝达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.cross_zone_denied_5m)>={$YUNDU.CROSSZONE.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.cross_zone_denied_5m,3m)<{$YUNDU.CROSSZONE.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "3546fbd8f9b35f48b1fd299942117615",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "security"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "442aeebf42d252e0a82bf27296e4d66d",
+            "name": "云渡：近5分钟越权下载被拒绝",
+            "type": "DEPENDENT",
+            "key": "yundu.unauthorized_download_denied_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.unauthorized_download_denied_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "security"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：近5分钟越权下载被拒绝达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.unauthorized_download_denied_5m)>={$YUNDU.UNAUTHORIZED.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.unauthorized_download_denied_5m,3m)<{$YUNDU.UNAUTHORIZED.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "3fd002638a47539e83f2049b888c16f2",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "security"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "b3c76358e28d5cb1b38885cffd5bfd71",
+            "name": "云渡：近5分钟文件类型或文本检查不通过",
+            "type": "DEPENDENT",
+            "key": "yundu.text_denied_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.text_denied_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "security"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：近5分钟文件类型或文本检查不通过达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.text_denied_5m)>={$YUNDU.TEXTDENIED.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.text_denied_5m,3m)<{$YUNDU.TEXTDENIED.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "ff4b474a94685f738bd7f50582dcda62",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "security"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "40e01a32ae485a73af9be0da80ef852f",
+            "name": "云渡：近5分钟文件或整单字节超限",
+            "type": "DEPENDENT",
+            "key": "yundu.size_denied_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.size_denied_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "security"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：近5分钟文件或整单字节超限达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.size_denied_5m)>={$YUNDU.SIZEDENIED.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.size_denied_5m,3m)<{$YUNDU.SIZEDENIED.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "20423882b2da5593a23ce13bb7827d85",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "security"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "23f9f93563f059b48c0243d8ce67e29c",
+            "name": "云渡：近5分钟文件数或用户配额超限",
+            "type": "DEPENDENT",
+            "key": "yundu.quota_denied_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.quota_denied_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "security"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：近5分钟文件数或用户配额超限达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.quota_denied_5m)>={$YUNDU.QUOTADENIED.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.quota_denied_5m,3m)<{$YUNDU.QUOTADENIED.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "2df21a6a757a5d97b9d3fe264125eae6",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "security"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "950a94a88bb057779d89f740822a42e9",
+            "name": "云渡：近5分钟传输资源繁忙",
+            "type": "DEPENDENT",
+            "key": "yundu.resource_busy_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.resource_busy_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "capacity"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：近5分钟传输资源繁忙达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.resource_busy_5m)>={$YUNDU.BUSY.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.resource_busy_5m,3m)<{$YUNDU.BUSY.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "349a44c131175c759b76578aed24a5cd",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "capacity"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "669edc2b72605a21bf18fc5b148b0c3d",
+            "name": "云渡：单用户近5分钟最大上传尝试数",
+            "type": "DEPENDENT",
+            "key": "yundu.max_user_upload_attempts_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.max_user_upload_attempts_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "volume"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：单用户近5分钟最大上传尝试数达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.max_user_upload_attempts_5m)>={$YUNDU.UPLOADCOUNT.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.max_user_upload_attempts_5m,3m)<{$YUNDU.UPLOADCOUNT.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "a6218932710155699fecf186780455ec",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "volume"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "23abcd65e3d35b8cbdec1e69fa44cf60",
+            "name": "云渡：单用户近5分钟最大下载启动数",
+            "type": "DEPENDENT",
+            "key": "yundu.max_user_download_starts_5m",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.max_user_download_starts_5m"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "volume"
+              }
+            ],
+            "triggers": [
+              {
+                "name": "云渡：单用户近5分钟最大下载启动数达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.max_user_download_starts_5m)>={$YUNDU.DOWNLOADCOUNT.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.max_user_download_starts_5m,3m)<{$YUNDU.DOWNLOADCOUNT.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "8d433eb30274508eb0d817928b26a93a",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "volume"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "38a893c083ff51458275937a9480efb2",
+            "name": "云渡：单用户近1小时最大上传字节",
+            "type": "DEPENDENT",
+            "key": "yundu.max_user_upload_bytes_1h",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.max_user_upload_bytes_1h"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "volume"
+              }
+            ],
+            "units": "B",
+            "triggers": [
+              {
+                "name": "云渡：单用户近1小时最大上传字节达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.max_user_upload_bytes_1h)>={$YUNDU.UPLOADBYTES.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.max_user_upload_bytes_1h,3m)<{$YUNDU.UPLOADBYTES.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "cc66d40215b259e7925ba649b8385e8f",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "volume"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "e8cac5d81fb7548d91484d57f39990f7",
+            "name": "云渡：单用户近1小时最大下载字节",
+            "type": "DEPENDENT",
+            "key": "yundu.max_user_download_bytes_1h",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.max_user_download_bytes_1h"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "volume"
+              }
+            ],
+            "units": "B",
+            "triggers": [
+              {
+                "name": "云渡：单用户近1小时最大下载字节达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.max_user_download_bytes_1h)>={$YUNDU.DOWNLOADBYTES.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.max_user_download_bytes_1h,3m)<{$YUNDU.DOWNLOADBYTES.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "8203d19e487e54a0965d48fd37cf3b50",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "volume"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "uuid": "d6034a343ebc59c687b9d1d646a529df",
+            "name": "云渡：全局活跃上传槽位",
+            "type": "DEPENDENT",
+            "key": "yundu.active_uploads",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.active_uploads"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "capacity"
+              }
+            ]
+          },
+          {
+            "uuid": "1cf10f136e345895a667a5e0bc02b8b8",
+            "name": "云渡：全局活跃下载槽位",
+            "type": "DEPENDENT",
+            "key": "yundu.active_downloads",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.active_downloads"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "capacity"
+              }
+            ]
+          },
+          {
+            "uuid": "92efa57cafb95e6291ef773116f3d4ce",
+            "name": "云渡：全局活跃复制槽位",
+            "type": "DEPENDENT",
+            "key": "yundu.active_copies",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.active_copies"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "capacity"
+              }
+            ]
+          },
+          {
+            "uuid": "19b6fbb29d60595eafcce21e63482b5b",
+            "name": "云渡：审计与流量聚合滞后秒数",
+            "type": "DEPENDENT",
+            "key": "yundu.audit_aggregation_lag_seconds",
+            "delay": "0",
+            "history": "7d",
+            "trends": "365d",
+            "value_type": "UNSIGNED",
+            "master_item": {
+              "key": "yundu.metrics.raw"
+            },
+            "preprocessing": [
+              {
+                "type": "JSONPATH",
+                "parameters": [
+                  "$.audit_aggregation_lag_seconds"
+                ]
+              }
+            ],
+            "tags": [
+              {
+                "tag": "component",
+                "value": "health"
+              }
+            ],
+            "units": "s",
+            "triggers": [
+              {
+                "name": "云渡：审计与流量聚合滞后秒数达到阈值",
+                "expression": "last(/Yundu by HTTP/yundu.audit_aggregation_lag_seconds)>={$YUNDU.LAG.WARN}",
+                "priority": "WARNING",
+                "recovery_mode": "RECOVERY_EXPRESSION",
+                "recovery_expression": "max(/Yundu by HTTP/yundu.audit_aggregation_lag_seconds,3m)<{$YUNDU.LAG.WARN}",
+                "dependencies": [
+                  {
+                    "name": "云渡：监控接口无有效数据",
+                    "expression": "nodata(/Yundu by HTTP/yundu.metrics.raw,3m)=1"
+                  },
+                  {
+                    "name": "云渡：指标快照过期或时钟异常",
+                    "expression": "fuzzytime(/Yundu by HTTP/yundu.snapshot_updated_at,120s)=0"
+                  },
+                  {
+                    "name": "云渡：监控聚合窗口尚未就绪",
+                    "expression": "last(/Yundu by HTTP/yundu.snapshot_valid)=0"
+                  }
+                ],
+                "uuid": "0a2a829dbd62527f8454458825bc897c",
+                "tags": [
+                  {
+                    "tag": "scope",
+                    "value": "health"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "macros": [
+          {
+            "macro": "{$YUNDU.URL}",
+            "value": "https://yundu.example.internal",
+            "description": "云渡管理入口，仅HTTPS，不带末尾斜杠。"
+          },
+          {
+            "macro": "{$YUNDU.TOKEN}",
+            "type": "SECRET_TEXT",
+            "value": "",
+            "description": "填写云渡生成的只读监控令牌，使用主机级秘密宏。"
+          },
+          {
+            "macro": "{$YUNDU.HTTP.PROXY}",
+            "value": "",
+            "description": "可选，Zabbix采集侧HTTP代理；与云渡出站Proxy和Zabbix Proxy组件不同。"
+          },
+          {
+            "macro": "{$YUNDU.CROSSZONE.WARN}",
+            "value": "3",
+            "description": "近5分钟跨安全域操作被拒绝告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.UNAUTHORIZED.WARN}",
+            "value": "3",
+            "description": "近5分钟越权下载被拒绝告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.TEXTDENIED.WARN}",
+            "value": "5",
+            "description": "近5分钟文件类型或文本检查不通过告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.SIZEDENIED.WARN}",
+            "value": "5",
+            "description": "近5分钟文件或整单字节超限告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.QUOTADENIED.WARN}",
+            "value": "10",
+            "description": "近5分钟文件数或用户配额超限告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.BUSY.WARN}",
+            "value": "30",
+            "description": "近5分钟传输资源繁忙告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.UPLOADCOUNT.WARN}",
+            "value": "20",
+            "description": "单用户近5分钟最大上传尝试数告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.DOWNLOADCOUNT.WARN}",
+            "value": "30",
+            "description": "单用户近5分钟最大下载启动数告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.UPLOADBYTES.WARN}",
+            "value": "1073741824",
+            "description": "单用户近1小时最大上传字节告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.DOWNLOADBYTES.WARN}",
+            "value": "2147483648",
+            "description": "单用户近1小时最大下载字节告警阈值；仅监控，不修改平台业务限制。"
+          },
+          {
+            "macro": "{$YUNDU.LAG.WARN}",
+            "value": "120",
+            "description": "审计与流量聚合滞后秒数告警阈值；仅监控，不修改平台业务限制。"
+          }
+        ],
+        "tags": [
+          {
+            "tag": "application",
+            "value": "yundu"
+          }
+        ]
+      }
+    ]
+  }
+}

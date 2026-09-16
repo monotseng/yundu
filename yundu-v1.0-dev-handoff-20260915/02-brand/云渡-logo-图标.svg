@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+<title id="title">云渡标志</title><desc id="desc">深蓝云形与青绿反向箭头组成的文件交换标志。</desc>
+<g transform="translate(10 11)"><g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M49 166C28 163 14 145 14 124C14 102 31 83 53 81C60 49 87 28 119 32C146 35 167 56 171 83C198 84 219 105 219 132C219 144 215 154 208 163" stroke="#17374F" stroke-width="15"/>
+  <path d="M70 118H165M149 102L165 118L149 134" stroke="#17374F" stroke-width="14"/>
+  <path d="M184 169H89M105 153L89 169L105 185" stroke="#159E9A" stroke-width="14"/>
+</g></g>
+</svg>

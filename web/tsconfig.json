@@ -1,0 +1,1 @@
+{"extends":"./src/.umi-production/tsconfig.json","compilerOptions":{"strict":true,"skipLibCheck":true}}

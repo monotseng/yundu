@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="56" viewBox="0 0 220 56" role="img" aria-labelledby="title desc">
+  <title id="title">云渡文件交换平台</title><desc id="desc">云渡双向安全文件交换品牌标志</desc>
+  <g transform="translate(6 6)"><rect width="44" height="44" rx="12" fill="#12384f"/><path d="M10 15.5h18.5l-3.8-3.8 2.9-2.9 8.8 8.8-8.8 8.8-2.9-2.9 3.8-3.8H10z" fill="#fff"/><path d="M34 28.5H15.5l3.8 3.8-2.9 2.9-8.8-8.8 8.8-8.8 2.9 2.9-3.8 3.8H34z" fill="#32c3b5"/><circle cx="10" cy="15.5" r="2.2" fill="#32c3b5"/><circle cx="34" cy="28.5" r="2.2" fill="#fff"/></g>
+  <text x="64" y="28" fill="#12384f" font-family="system-ui,'Microsoft YaHei',sans-serif" font-size="22" font-weight="700" letter-spacing="3">云渡</text>
+  <text x="64" y="45" fill="#607482" font-family="system-ui,'Microsoft YaHei',sans-serif" font-size="11" letter-spacing="2">文件交换平台</text>
+</svg>

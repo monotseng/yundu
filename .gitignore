@@ -1,0 +1,9 @@
+/release/
+/web/node_modules/
+/web/dist/
+/web/src/.umi-production/
+/configs/config.local.yaml
+/runtime/
+*.pid
+*.log
+.env

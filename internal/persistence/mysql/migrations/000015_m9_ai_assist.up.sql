@@ -1,0 +1,6 @@
+CREATE TABLE ai_invocations(id BINARY(16) PRIMARY KEY,user_id BINARY(16) NOT NULL,request_id BINARY(16) NOT NULL,integration_version_id BINARY(16) NOT NULL,status ENUM('PENDING','SUCCEEDED','FAILED') NOT NULL,result_code VARCHAR(64),input_chars INT UNSIGNED NOT NULL,output_chars INT UNSIGNED,charged_tokens INT UNSIGNED NOT NULL,prompt_tokens INT UNSIGNED,completion_tokens INT UNSIGNED,latency_ms INT UNSIGNED,created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),finished_at TIMESTAMP(6),INDEX ix_ai_user_day(user_id,created_at),INDEX ix_ai_month(created_at,status)) ENGINE=InnoDB;
+CREATE TABLE ai_daily_usage(user_id BINARY(16) NOT NULL,usage_date DATE NOT NULL,invocation_count SMALLINT UNSIGNED NOT NULL,PRIMARY KEY(user_id,usage_date)) ENGINE=InnoDB;
+CREATE TABLE ai_monthly_usage(usage_month CHAR(7) PRIMARY KEY,charged_tokens BIGINT UNSIGNED NOT NULL) ENGINE=InnoDB;
+CREATE TABLE ai_concurrency_slots(slot_no TINYINT UNSIGNED PRIMARY KEY,holder_id BINARY(16),lease_expires_at TIMESTAMP(6),fencing_token BIGINT UNSIGNED NOT NULL DEFAULT 0);
+INSERT INTO ai_concurrency_slots(slot_no) VALUES(1),(2);
+INSERT IGNORE INTO role_permissions(role_id,permission) SELECT id,'ai.manage' FROM roles WHERE code='SYSTEM_OPERATOR';

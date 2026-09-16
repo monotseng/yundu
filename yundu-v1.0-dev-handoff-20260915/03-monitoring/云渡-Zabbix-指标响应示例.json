@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "snapshot_valid": 1,
+  "snapshot_updated_at": 1789420800,
+  "open_policy_breach_incidents": 0,
+  "open_integrity_incidents": 0,
+  "cross_zone_denied_5m": 0,
+  "unauthorized_download_denied_5m": 0,
+  "text_denied_5m": 0,
+  "size_denied_5m": 0,
+  "quota_denied_5m": 0,
+  "resource_busy_5m": 0,
+  "max_user_upload_attempts_5m": 0,
+  "max_user_download_starts_5m": 0,
+  "max_user_upload_bytes_1h": 0,
+  "max_user_download_bytes_1h": 0,
+  "active_uploads": 0,
+  "active_downloads": 0,
+  "active_copies": 0,
+  "audit_aggregation_lag_seconds": 0
+}
