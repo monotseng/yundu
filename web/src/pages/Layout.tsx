@@ -11,13 +11,15 @@ import {
   ApiOutlined,
   CloudServerOutlined,
   ControlOutlined,
+  GlobalOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { Link, Outlet, useLocation, useNavigate } from "@umijs/renderer-react";
-import { Avatar, Layout as AntLayout, Menu, Space, Tag } from "antd";
+import { Avatar, Button, Layout as AntLayout, Menu, Space, Tag } from "antd";
 import Brand from "@/components/Brand";
 import { useEffect, useState } from "react";
 import { getRuntime, type Runtime } from "@/api/runtime";
+import { useI18n } from "@/i18n";
 
 const { Header, Sider, Content } = AntLayout;
 const navItems: any[] = [
@@ -48,7 +50,12 @@ const navItems: any[] = [
     key: "/approvals",
     icon: <CheckSquareOutlined />,
     label: <Link to="/approvals">我的审批</Link>,
-    permissions: ["approval.act", "approval.group", "approval.department", "approval.security"],
+    permissions: [
+      "approval.act",
+      "approval.group",
+      "approval.department",
+      "approval.security",
+    ],
   },
   {
     key: "/notifications",
@@ -66,20 +73,55 @@ const navItems: any[] = [
     icon: <SettingOutlined />,
     label: "系统设置",
     children: [
-      { key: "/settings/organization", icon: <ApartmentOutlined />, label: <Link to="/settings/organization">组织与用户</Link>, permissions:["organization.manage","user.manage"] },
-      { key: "/settings/workflows", icon: <CheckSquareOutlined />, label: <Link to="/settings/workflows">审批流程</Link>, permissions:["workflow.manage","workflow.publish"] },
-      { key: "/settings/integrations", icon: <ApiOutlined />, label: <Link to="/settings/integrations">集成配置</Link>, permissions:["integration.read","integration.manage"] },
-      { key: "/settings/transfers", icon: <SwapOutlined />, label: <Link to="/settings/transfers">交换与传输</Link>, permissions:["operations.read","operations.manage"] },
-      { key: "/settings/operations", icon: <CloudServerOutlined />, label: <Link to="/settings/operations">监控与审计</Link>, permissions:["monitoring.manage","audit.read"] },
-      { key: "/settings/security", icon: <ControlOutlined />, label: <Link to="/settings/security">凭据与安全</Link>, permissions:["secret.manage","security.manage"] },
+      {
+        key: "/settings/organization",
+        icon: <ApartmentOutlined />,
+        label: <Link to="/settings/organization">组织与用户</Link>,
+        permissions: ["organization.manage", "user.manage"],
+      },
+      {
+        key: "/settings/workflows",
+        icon: <CheckSquareOutlined />,
+        label: <Link to="/settings/workflows">审批流程</Link>,
+        permissions: ["workflow.manage", "workflow.publish"],
+      },
+      {
+        key: "/settings/integrations",
+        icon: <ApiOutlined />,
+        label: <Link to="/settings/integrations">集成配置</Link>,
+        permissions: ["integration.read", "integration.manage"],
+      },
+      {
+        key: "/settings/transfers",
+        icon: <SwapOutlined />,
+        label: <Link to="/settings/transfers">交换与传输</Link>,
+        permissions: ["operations.read", "operations.manage"],
+      },
+      {
+        key: "/settings/operations",
+        icon: <CloudServerOutlined />,
+        label: <Link to="/settings/operations">监控与审计</Link>,
+        permissions: ["monitoring.manage", "audit.read"],
+      },
+      {
+        key: "/settings/security",
+        icon: <ControlOutlined />,
+        label: <Link to="/settings/security">凭据与安全</Link>,
+        permissions: ["secret.manage", "security.manage"],
+      },
     ],
   },
 ];
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { language, toggleLanguage } = useI18n();
   const [runtime, setRuntime] = useState<Runtime>();
-  const [user, setUser] = useState<{ display_name: string; avatar_emoji?: string; permissions: string[] }>();
+  const [user, setUser] = useState<{
+    display_name: string;
+    avatar_emoji?: string;
+    permissions: string[];
+  }>();
   const [checking, setChecking] = useState(true);
   useEffect(() => {
     getRuntime()
@@ -102,10 +144,44 @@ export default function AppLayout() {
   };
   const zone = runtime?.portal_zone;
   const permissions = new Set(user?.permissions || []);
-  const allowed = (entry:any) => !entry.permissions?.length || entry.permissions.some((value:string)=>permissions.has(value));
-  const items = navItems.map(entry => entry.children ? { ...entry, children: entry.children.filter(allowed) } : entry).filter(entry => entry.children ? entry.children.length > 0 : allowed(entry)).map(({permissions:_,...entry}) => entry.children ? {...entry,children:entry.children.map(({permissions:__,...child}:any)=>child)} : entry);
-  const permittedPaths = new Set<string>(items.flatMap((entry:any)=>entry.children ? entry.children.map((child:any)=>child.key) : [entry.key]));
-  useEffect(() => { if (!checking && user && location.pathname !== "/dashboard" && !permittedPaths.has(location.pathname)) navigate("/dashboard", { replace:true }); }, [checking,user,location.pathname]);
+  const allowed = (entry: any) =>
+    !entry.permissions?.length ||
+    entry.permissions.some((value: string) => permissions.has(value));
+  const items = navItems
+    .map((entry) =>
+      entry.children
+        ? { ...entry, children: entry.children.filter(allowed) }
+        : entry,
+    )
+    .filter((entry) =>
+      entry.children ? entry.children.length > 0 : allowed(entry),
+    )
+    .map(({ permissions: _, ...entry }) =>
+      entry.children
+        ? {
+            ...entry,
+            children: entry.children.map(
+              ({ permissions: __, ...child }: any) => child,
+            ),
+          }
+        : entry,
+    );
+  const permittedPaths = new Set<string>(
+    items.flatMap((entry: any) =>
+      entry.children
+        ? entry.children.map((child: any) => child.key)
+        : [entry.key],
+    ),
+  );
+  useEffect(() => {
+    if (
+      !checking &&
+      user &&
+      location.pathname !== "/dashboard" &&
+      !permittedPaths.has(location.pathname)
+    )
+      navigate("/dashboard", { replace: true });
+  }, [checking, user, location.pathname]);
   const zoneText =
     zone === "OFFICE"
       ? "办公网络入口"
@@ -119,7 +195,14 @@ export default function AppLayout() {
         <div className="sider-brand">
           <Brand />
         </div>
-        <Menu mode="inline" selectedKeys={[location.pathname]} defaultOpenKeys={location.pathname.startsWith("/settings") ? ["settings-root"] : []} items={items} />
+        <Menu
+          mode="inline"
+          selectedKeys={[location.pathname]}
+          defaultOpenKeys={
+            location.pathname.startsWith("/settings") ? ["settings-root"] : []
+          }
+          items={items}
+        />
         <div className="sider-foot">
           纯 Web 安全交换
           <br />
@@ -135,7 +218,25 @@ export default function AppLayout() {
             <span className="top-hint">当前入口决定允许的上传与领取方向</span>
           </Space>
           <Space className="user-action" onClick={logout}>
-            <Avatar className="emoji-avatar" icon={user?.avatar_emoji ? undefined : <UserOutlined />}>{user?.avatar_emoji}</Avatar>
+            <Button
+              className="language-switch"
+              type="text"
+              size="small"
+              icon={<GlobalOutlined />}
+              title={language === "zh-CN" ? "Switch to English" : "切换为中文"}
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleLanguage();
+              }}
+            >
+              {language === "zh-CN" ? "EN" : "中文"}
+            </Button>
+            <Avatar
+              className="emoji-avatar"
+              icon={user?.avatar_emoji ? undefined : <UserOutlined />}
+            >
+              {user?.avatar_emoji}
+            </Avatar>
             <span>{user?.display_name}</span>
             <span className="logout-text">退出</span>
           </Space>
