@@ -16,6 +16,7 @@ cd "${repo_root}"
 npm --prefix web ci
 npm --prefix web run typecheck
 npm --prefix web run build
+find internal/web/dist -mindepth 1 -delete
 cp -a web/dist/. internal/web/dist/
 go test ./...
 go vet ./...

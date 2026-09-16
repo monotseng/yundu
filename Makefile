@@ -6,8 +6,8 @@ VERSION ?= $(shell date -u +%Y%m%d%H%M%S)
 
 web:
 	cd web && npm ci && npm run build
-	rm -rf internal/web/dist
-	cp -a web/dist internal/web/dist
+	find internal/web/dist -mindepth 1 -delete
+	cp -a web/dist/. internal/web/dist/
 
 build: web
 	mkdir -p release
