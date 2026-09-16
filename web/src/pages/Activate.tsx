@@ -1,12 +1,192 @@
-import { Button, Card, Form, Input, Result, Space, Typography, message } from 'antd';
-import { useState } from 'react';
-import Brand from '@/components/Brand';
+import { GlobalOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Result,
+  Space,
+  Typography,
+  message,
+} from "antd";
+import { useState } from "react";
+import Brand from "@/components/Brand";
+import { useI18n } from "@/i18n";
 
-type Binding={binding_token:string;secret:string;qr_data_url:string;expires_at:string};
-export default function Activate(){
-  const rebind=location.hash.includes('mode=rebind');
-  const [binding,setBinding]=useState<Binding>();const [complete,setComplete]=useState(false);const [loading,setLoading]=useState(false);
-  const activate=async(values:{token:string,password:string,confirm:string})=>{setLoading(true);try{const response=await fetch(rebind?'/api/v1/auth/mfa/rebind':'/api/v1/auth/activate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:values.token,password:values.password})});const data=await response.json();if(!response.ok)throw new Error(data.detail);setBinding(data)}catch(error){message.error((error as Error).message)}finally{setLoading(false)}};
-  const confirm=async(values:{code:string})=>{setLoading(true);try{const response=await fetch('/api/v1/auth/mfa/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({binding_token:binding?.binding_token,code:values.code})});if(!response.ok){const data=await response.json();throw new Error(data.detail)}setComplete(true);setBinding(undefined)}catch(error){message.error((error as Error).message)}finally{setLoading(false)}};
-  return <div className="activate-page"><div className="activate-header"><Brand/></div><Card className="activate-card">{complete?<Result status="success" title="Authenticator 绑定成功" subTitle="为验证新的动态验证码，系统没有直接创建业务会话，请重新登录。" extra={<Button type="primary" href="#/login">前往登录</Button>}/>:!binding?<><Typography.Title level={3}>激活账号</Typography.Title><Typography.Paragraph type="secondary">输入管理员提供的一次性激活凭据并设置密码。</Typography.Paragraph><Form layout="vertical" onFinish={activate}><Form.Item name="token" label="激活凭据" rules={[{required:true}]}><Input autoComplete="off"/></Form.Item><Form.Item name="password" label="新密码" rules={[{required:true,min:12,max:128}]}><Input.Password autoComplete="new-password"/></Form.Item><Form.Item name="confirm" label="确认密码" dependencies={['password']} rules={[{required:true},({getFieldValue})=>({validator(_,value){return !value||getFieldValue('password')===value?Promise.resolve():Promise.reject(new Error('两次输入的密码不一致'));}})]}><Input.Password autoComplete="new-password"/></Form.Item><Button block type="primary" htmlType="submit" loading={loading}>设置密码并开始绑定</Button></Form></>:<><Typography.Title level={3}>绑定 Microsoft Authenticator</Typography.Title><Typography.Paragraph>在 Authenticator 中选择“其他账户”，扫描下方二维码，然后输入六位验证码。</Typography.Paragraph><div className="qr-box"><img src={binding.qr_data_url} alt="Authenticator 绑定二维码"/><Typography.Text copyable={{text:binding.secret}}>手工秘钥：{binding.secret}</Typography.Text></div><Form layout="vertical" onFinish={confirm}><Form.Item name="code" label="六位动态验证码" rules={[{required:true,pattern:/^\d{6}$/}]}><Input maxLength={6} inputMode="numeric" autoComplete="one-time-code"/></Form.Item><Space direction="vertical" style={{width:'100%'}}><Button block type="primary" htmlType="submit" loading={loading}>确认绑定</Button><Typography.Text type="secondary">二维码与手工秘钥仅在本次十分钟绑定流程中显示。</Typography.Text></Space></Form></>}</Card></div>;
+type Binding = {
+  binding_token: string;
+  secret: string;
+  qr_data_url: string;
+  expires_at: string;
+};
+export default function Activate() {
+  const { language, toggleLanguage } = useI18n();
+  const rebind = location.hash.includes("mode=rebind");
+  const [binding, setBinding] = useState<Binding>();
+  const [complete, setComplete] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const activate = async (values: {
+    token: string;
+    password: string;
+    confirm: string;
+  }) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        rebind ? "/api/v1/auth/mfa/rebind" : "/api/v1/auth/activate",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: values.token,
+            password: values.password,
+          }),
+        },
+      );
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail);
+      setBinding(data);
+    } catch (error) {
+      message.error((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const confirm = async (values: { code: string }) => {
+    setLoading(true);
+    try {
+      const response = await fetch("/api/v1/auth/mfa/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          binding_token: binding?.binding_token,
+          code: values.code,
+        }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail);
+      }
+      setComplete(true);
+      setBinding(undefined);
+    } catch (error) {
+      message.error((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div className="activate-page">
+      <Button
+        className="public-language-switch"
+        icon={<GlobalOutlined />}
+        onClick={toggleLanguage}
+        title={language === "zh-CN" ? "Switch to English" : "切换为中文"}
+      >
+        {language === "zh-CN" ? "EN" : "中文"}
+      </Button>
+      <div className="activate-header">
+        <Brand />
+      </div>
+      <Card className="activate-card">
+        {complete ? (
+          <Result
+            status="success"
+            title="Authenticator 绑定成功"
+            subTitle="为验证新的动态验证码，系统没有直接创建业务会话，请重新登录。"
+            extra={
+              <Button type="primary" href="#/login">
+                前往登录
+              </Button>
+            }
+          />
+        ) : !binding ? (
+          <>
+            <Typography.Title level={3}>激活账号</Typography.Title>
+            <Typography.Paragraph type="secondary">
+              输入管理员提供的一次性激活凭据并设置密码。
+            </Typography.Paragraph>
+            <Form layout="vertical" onFinish={activate}>
+              <Form.Item
+                name="token"
+                label="激活凭据"
+                rules={[{ required: true }]}
+              >
+                <Input autoComplete="off" />
+              </Form.Item>
+              <Form.Item
+                name="password"
+                label="新密码"
+                rules={[{ required: true, min: 12, max: 128 }]}
+              >
+                <Input.Password autoComplete="new-password" />
+              </Form.Item>
+              <Form.Item
+                name="confirm"
+                label="确认密码"
+                dependencies={["password"]}
+                rules={[
+                  { required: true },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      return !value || getFieldValue("password") === value
+                        ? Promise.resolve()
+                        : Promise.reject(new Error("两次输入的密码不一致"));
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password autoComplete="new-password" />
+              </Form.Item>
+              <Button block type="primary" htmlType="submit" loading={loading}>
+                设置密码并开始绑定
+              </Button>
+            </Form>
+          </>
+        ) : (
+          <>
+            <Typography.Title level={3}>
+              绑定 Microsoft Authenticator
+            </Typography.Title>
+            <Typography.Paragraph>
+              在 Authenticator
+              中选择“其他账户”，扫描下方二维码，然后输入六位验证码。
+            </Typography.Paragraph>
+            <div className="qr-box">
+              <img src={binding.qr_data_url} alt="Authenticator 绑定二维码" />
+              <Typography.Text copyable={{ text: binding.secret }}>
+                手工秘钥：{binding.secret}
+              </Typography.Text>
+            </div>
+            <Form layout="vertical" onFinish={confirm}>
+              <Form.Item
+                name="code"
+                label="六位动态验证码"
+                rules={[{ required: true, pattern: /^\d{6}$/ }]}
+              >
+                <Input
+                  maxLength={6}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                />
+              </Form.Item>
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <Button
+                  block
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                >
+                  确认绑定
+                </Button>
+                <Typography.Text type="secondary">
+                  二维码与手工秘钥仅在本次十分钟绑定流程中显示。
+                </Typography.Text>
+              </Space>
+            </Form>
+          </>
+        )}
+      </Card>
+    </div>
+  );
 }
