@@ -331,7 +331,6 @@ export const enUI: Record<string, string> = {
   团队责任: "Team responsibility",
   负责人: "Manager",
   编码: "Code",
-  部门名称: "Department name",
   部门编码: "Department code",
   责任部门: "Owning department",
   允许方向: "Allowed directions",
@@ -386,4 +385,350 @@ export const enUI: Record<string, string> = {
   暂无用户: "No users",
   暂无业务系统: "No business systems",
   系统账号: "System account",
+  请求失败: "Request failed",
+  运行配置加载失败: "Failed to load runtime configuration",
+  云渡标志: "Yundu logo",
+  生产与办公网络文件交换及审批:
+    "File exchange and approval between production and office networks",
+  交换渠道依赖两侧已发布存储:
+    "Exchange channels require published storage on both sides",
+  交换渠道已发布: "Exchange channel published",
+  发布渠道配置: "Publish channel configuration",
+  已启用: "Enabled",
+  未启用: "Disabled",
+  "每 5 秒自动刷新": "Refreshes every 5 seconds",
+  立即刷新: "Refresh now",
+  "请先在“集成配置”中完成办公域与生产域对象存储的测试和发布。":
+    "Test and publish object storage for both office and production zones in Integrations first.",
+  配置办公到生产: "Configure Office to Production",
+  配置生产到办公: "Configure Production to Office",
+  "Authenticator 绑定二维码": "Authenticator enrollment QR code",
+  "Authenticator 绑定成功": "Authenticator enrolled successfully",
+  两次输入的密码不一致: "The passwords do not match",
+  "为验证新的动态验证码，系统没有直接创建业务会话，请重新登录。":
+    "To verify the new authenticator, no application session was created. Please sign in again.",
+  "二维码与手工秘钥仅在本次十分钟绑定流程中显示。":
+    "The QR code and setup key are shown only during this 10-minute enrollment session.",
+  "在 Authenticator 中选择“其他账户”，扫描下方二维码，然后输入六位验证码。":
+    "Choose Other account in Authenticator, scan the QR code, then enter the six-digit code.",
+  "手工秘钥：": "Setup key:",
+  "输入管理员提供的一次性激活凭据并设置密码。":
+    "Enter the one-time activation token supplied by an administrator and set your password.",
+  决定已记录: "Decision recorded",
+  办理: "Process",
+  同意: "Approve",
+  "实际任务、会签状态与办理截止时间":
+    "Actual tasks, countersign status and due time",
+  审批决定: "Approval decision",
+  申请: "Request",
+  确认决定: "Confirm decision",
+  "例如 REQUEST.SUBMIT": "e.g. REQUEST.SUBMIT",
+  "办公 → 生产": "Office → Production",
+  失败: "Failed",
+  审计查询必须指定时间窗: "An audit search time range is required",
+  成功: "Success",
+  "按时间窗和业务维度检索审计元数据，不提供文件正文":
+    "Search audit metadata by time range and business dimensions; file contents are never exposed",
+  "时间范围为必填项，更多条件可组合使用":
+    "Time range is required; additional filters can be combined",
+  条当前结果: " results on this page",
+  "生产 → 办公": "Production → Office",
+  请选择查询时间范围: "Select a time range",
+  "输入完整申请 ID": "Enter the full request ID",
+  "输入用户或服务账号 ID": "Enter a user or service account ID",
+  功能尚未启用: "Feature not enabled",
+  功能页面: "Feature",
+  "当前页面明确展示实施状态，不使用静态数据或假成功响应。":
+    "This page shows the actual implementation status and does not use mock data or false success responses.",
+  尚无交换申请: "No exchange requests",
+  当前角色未配置申请查看权限:
+    "Your role does not have permission to view requests",
+  正在加载: "Loading",
+  "下载已开始；发送完成不代表浏览器已经保存文件":
+    "Download started. Transfer completion does not mean the browser has saved the file.",
+  登录失败: "Sign-in failed",
+  请输入六位数字验证码: "Enter the six-digit verification code",
+  "请输入 6 位验证码": "Enter the 6-digit verification code",
+  "验证成功，请输入身份验证器中的动态验证码。":
+    "Password verified. Enter the code from your authenticator.",
+  "1. 责任范围": "1. Responsibility scope",
+  "2. 交换说明": "2. Exchange details",
+  "3. 交换文件": "3. Exchange files",
+  "AI 不会自动保存、提交或改变团队、密级和附件。":
+    "AI will not save, submit, or change the team, classification, or attachments.",
+  "AI 整理建议（不可信纯文本）": "AI writing suggestion (untrusted plain text)",
+  "AI 辅助仅允许 INTERNAL 草稿":
+    "AI assistance is available only for INTERNAL drafts",
+  "上传后记录不可变 Version ID 和 SHA-256":
+    "Immutable Version ID and SHA-256 are recorded after upload",
+  业务系统按团队所属部门和允许方向自动过滤:
+    "Business systems are filtered by the team's department and allowed direction",
+  "个文件，共": " files, total ",
+  "例如 CHG-20260915-001": "e.g. CHG-20260915-001",
+  内部: "Internal",
+  "办公到生产仅允许 SQL 或 CSV 文件":
+    "Only SQL or CSV files are allowed from Office to Production",
+  已选择: "Selected ",
+  当前范围尚未完成存储通道或审批流程配置:
+    "Storage channels or approval workflows are not fully configured for this scope",
+  当前范围未具备完整交换条件: "This scope is not fully ready for exchange",
+  待选择: "Not selected",
+  "按团队、业务系统、存储通道和审批流程创建可审计草稿":
+    "Create an auditable draft using its team, business system, storage channel and approval workflow",
+  敏感: "Sensitive",
+  文件将按来源安全域策略校验:
+    "Files will be validated against the source-zone policy",
+  未指定: "Not specified",
+  用途将随文件版本冻结并进入审批记录:
+    "The purpose is frozen with the file version and included in the approval record",
+  申请草稿与附件已保存: "Request draft and attachments saved",
+  系统: "System",
+  "说明文件内容、接收方、使用范围及预期结果":
+    "Describe the file contents, recipient, scope of use and expected outcome",
+  "请先在“组织与用户”中维护团队成员关系。":
+    "Assign the user to a team in Organization & users first.",
+  请先选择团队: "Select a team first",
+  "请至少填写 10 个字符": "Enter at least 10 characters",
+  "请选择（可选）": "Select (optional)",
+  采用到表单: "Apply to form",
+  高敏: "Highly sensitive",
+  传输完成: "Transfer completed",
+  关联申请: "Related request",
+  审批待办: "Approval task",
+  文件可领取: "Files ready for pickup",
+  暂无通知: "No notifications",
+  查看申请: "View request",
+  标为已读: "Mark as read",
+  正在加载通知: "Loading notifications",
+  没有未读通知: "No unread notifications",
+  申请被拒绝: "Request rejected",
+  站内通知: "In-app notification",
+  "站内通知与企业微信等外部消息通道相互独立，外部发送失败不会影响站内消息。":
+    "In-app notifications are independent of external channels such as WeCom; external delivery failures do not affect them.",
+  系统通知: "System notification",
+  否: "No",
+  是: "Yes",
+  "完成：": "Completed: ",
+  尚未启动: "Not started",
+  已进入来源权威检查: "Source-authoritative inspection started",
+  "截止：": "Due: ",
+  "提交后文件版本、哈希、用途和杀毒策略将被冻结，不能再修改。":
+    "After submission, file versions, hashes, purpose and antivirus policy are frozen and cannot be changed.",
+  确认提交: "Confirm submission",
+  "草稿提交后将先完成文件检查，通过后自动进入已绑定的审批流程。":
+    "After submission, files are inspected first and then enter the bound approval workflow automatically.",
+  "该项未执行病毒扫描，不能解释为无病毒；文本、类型与哈希检查不受影响。":
+    "No virus scan was performed. This must not be interpreted as virus-free; text, type and hash checks are unaffected.",
+  "可视化编排审批节点，校验安全基线并按交换方向发布":
+    "Arrange approval nodes visually, validate the security baseline and publish by exchange direction",
+  流程总数: "Total workflows",
+  流程版本: "Workflow versions",
+  流程编排: "Workflow designer",
+  当前全局绑定: "Current global bindings",
+  交换申请将按方向使用对应的已发布版本:
+    "Exchange requests use the published version bound to their direction",
+  未绑定: "Not bound",
+  团队负责人审批: "Team manager approval",
+  安全复核: "Security review",
+  部门责任审批: "Department owner approval",
+  申请提交: "Request submitted",
+  流程完成: "Workflow completed",
+  节点按自上而下顺序执行: "Nodes execute from top to bottom",
+  安全基线节点: "Security baseline nodes",
+  成功路径必须覆盖三道责任审批:
+    "Every successful path must include all three responsibility approvals",
+  草稿待校验: "Draft requires validation",
+  草稿已校验: "Draft validated",
+  保存草稿: "Save draft",
+  保存修改: "Save changes",
+  新增审批: "Add approval node",
+  模拟审批路径: "Simulate approval path",
+  结构和安全基线校验通过: "Structure and security baseline validation passed",
+  "结构合法，所有成功路径均覆盖安全基线节点。":
+    "The structure is valid and every successful path covers the security baseline nodes.",
+  草稿通过校验后才可发布和绑定:
+    "A draft must pass validation before it can be published and bound",
+  当前流程没有可发布的草稿版本:
+    "This workflow has no publishable draft version",
+  当前流程没有可校验的草稿版本:
+    "This workflow has no draft version to validate",
+  版本已发布: "Version published",
+  全局方向绑定已更新: "Global direction binding updated",
+  该方向尚未配置全局审批流程:
+    "No global approval workflow is configured for this direction",
+  编辑审批流程草稿: "Edit approval workflow draft",
+  "用于识别、检索和版本管理":
+    "Used for identification, search and version management",
+  说明适用范围和审批策略: "Describe the scope and approval policy",
+  任一审批: "Any approver",
+  已创建流程的标识信息不可在版本草稿中修改:
+    "Workflow identity fields cannot be changed in a version draft",
+  "团队负责人、安全复核和部门责任审批必须按序出现；流程不允许循环、脚本或绕过安全节点。":
+    "Team manager, security review and department owner approval must appear in order. Loops, scripts and security-node bypasses are not allowed.",
+  "管理用户、部门、团队及其业务系统归属":
+    "Manage users, departments, teams and their business-system assignments",
+  组织架构: "Organization structure",
+  角色与授权: "Roles & permissions",
+  人员头像: "User avatars",
+  "维护用户显示身份、头像及访问状态":
+    "Maintain user identity, avatar and access status",
+  部门是组织权限的一级边界:
+    "Departments are the primary boundary for organizational permissions",
+  "团队是申请发起、审批责任和成员归属的基本单位":
+    "Teams are the basic unit for requests, approval responsibility and membership",
+  "用于申请选择、审计检索和流程策略范围绑定":
+    "Used for request selection, audit search and workflow policy scoping",
+  新建部门: "Create department",
+  新建团队: "Create team",
+  创建用户: "Create user",
+  新增业务系统: "Add business system",
+  部门信息: "Department details",
+  团队信息: "Team details",
+  归属与交换策略: "Assignment & exchange policy",
+  责任人配置: "Manager assignment",
+  部门名称: "Department name",
+  "部门编码用于权限范围和流程绑定，创建后应保持稳定":
+    "The department code is used for permission scoping and workflow binding and should remain stable after creation",
+  团队编码创建后不可修改: "The team code cannot be changed after creation",
+  "负责人将成为团队成员，并参与团队负责人审批节点解析":
+    "Managers become team members and are included when resolving team-manager approval nodes",
+  选择顺序决定审批优先级: "Selection order determines approval priority",
+  数值越小越优先: "Lower values have higher priority",
+  确定用户所属团队及团队内责任:
+    "Set the user's team and responsibility within the team",
+  "部门决定可选团队范围，切换部门后需要重新选择团队":
+    "The department determines available teams; select the team again after changing departments",
+  普通成员: "Member",
+  团队内身份: "Team role",
+  创建待激活用户: "Create pending user",
+  创建用户并生成激活凭据: "Create user and issue activation token",
+  "用户创建后处于待激活状态，系统会生成一份 24 小时有效的一次性激活凭据。":
+    "New users remain pending activation. A one-time activation token valid for 24 hours is generated.",
+  "以下内容仅显示一次，请通过企业已验证渠道安全传递或保存引用。":
+    "This information is shown only once. Deliver it through a verified enterprise channel or save its reference securely.",
+  "停用用户会立即撤销其全部登录会话；团队变更会同步影响申请范围和团队负责人审批。":
+    "Disabling a user immediately revokes all sessions; team changes also affect request scope and team-manager approvals.",
+  "角色决定功能权限，范围限制权限生效边界":
+    "Roles determine capabilities; scopes limit where permissions apply",
+  所选角色将在全局范围生效: "Selected roles apply globally",
+  所选角色仅在该用户所属部门生效:
+    "Selected roles apply only within the user's department",
+  所选角色仅在该用户所属团队生效:
+    "Selected roles apply only within the user's team",
+  修改用户: "Edit user",
+  修改团队: "Edit team",
+  发起验证器重置: "Request authenticator reset",
+  审批验证器重置: "Review authenticator reset",
+  该操作需要另一位安全管理员复核:
+    "This action requires review by another security administrator",
+  发起人和目标用户不能审批本次重置:
+    "The requester and target user cannot approve this reset",
+  "复核通过后旧验证器和全部会话立即失效，并生成仅 30 分钟有效的重绑凭据。":
+    "After approval, the old authenticator and all sessions are invalidated and a 30-minute re-enrollment token is issued.",
+  管理双向交换通道和失败任务处置:
+    "Manage bidirectional exchange channels and failed-job handling",
+  按能力分类配置外部服务及版本化实例:
+    "Configure external services and versioned instances by capability",
+  "按能力分类管理存储、网络、通知和智能服务":
+    "Manage storage, network, notification and AI services by capability",
+  创建首个实例: "Create first instance",
+  已配置实例: "Configured instances",
+  集成类型: "Integration type",
+  可配置: "Configurable",
+  规划中: "Planned",
+  "配置发布后固定引用版本，避免静默变更":
+    "Published configurations pin their referenced versions to prevent silent changes",
+  "新建 S3 存储": "Create S3 storage",
+  "新建 S3 存储草稿": "Create S3 storage draft",
+  "修改 S3 存储草稿": "Edit S3 storage draft",
+  "按安全域配置版本化对象存储，用于交换载荷与审计归档。":
+    "Configure versioned object storage by security zone for exchange payloads and audit archives.",
+  存储凭据: "Storage credentials",
+  寻址方式: "Addressing style",
+  允许前缀: "Allowed prefix",
+  "Bucket 必须启用版本控制": "Bucket versioning must be enabled",
+  "云渡使用不可变 Version ID 冻结审批文件。请先在 MinIO/S3 管理端启用 Versioning，否则连接测试不会通过。":
+    "Yundu freezes approved files using immutable Version IDs. Enable versioning in MinIO/S3 before testing the connection.",
+  "请先完成连接测试并确保 Bucket 已启用版本控制":
+    "Complete the connection test and ensure bucket versioning is enabled first",
+  连接测试通过: "Connection test passed",
+  精确版本探测通过: "Exact version probe passed",
+  集成实例已发布: "Integration instance published",
+  已发布实例已撤销: "Published instance revoked",
+  集成草稿已删除: "Integration draft deleted",
+  已从发布版本创建可编辑修订草稿:
+    "An editable revision draft was created from the published version",
+  "确认删除该集成草稿？": "Delete this integration draft?",
+  "草稿配置及其凭据引用将一并删除，已保存的凭据本身不会删除。":
+    "The draft configuration and credential references will be deleted; stored credentials will remain.",
+  撤销: "Revoke",
+  已撤销: "Revoked",
+  "新建 CONNECT Proxy": "Create CONNECT proxy",
+  "新建 HTTP CONNECT Proxy": "Create HTTP CONNECT proxy",
+  "修改 HTTP CONNECT Proxy 草稿": "Edit HTTP CONNECT proxy draft",
+  "为受控出站通知提供固定目的地址的网络代理。":
+    "Provide a fixed-destination network proxy for controlled outbound notifications.",
+  代理无需认证时可留空: "Leave blank when proxy authentication is not required",
+  "仅未被通知实例引用的代理可以撤销。":
+    "Only proxies not referenced by notification instances can be revoked.",
+  "确认撤销该代理实例？": "Revoke this proxy instance?",
+  企业微信群机器人: "WeCom group bot",
+  新建企业微信群机器人: "Create WeCom group bot",
+  修改企业微信群机器人草稿: "Edit WeCom group bot draft",
+  "将审批和交换状态推送至企业微信群，Webhook 加密保存。":
+    "Push approval and exchange status to a WeCom group; the webhook is encrypted at rest.",
+  群别名: "Group alias",
+  通知凭据: "Notification credential",
+  "完整地址会加密保存，后续不再回显":
+    "The full address is encrypted and will not be displayed again",
+  "目的地固定为 qyapi.weixin.qq.com:443，TLS 校验不可关闭。":
+    "The destination is fixed to qyapi.weixin.qq.com:443 and TLS verification cannot be disabled.",
+  大语言模型: "Large language model",
+  新建模型草稿: "Create model draft",
+  "新建 AI 文字辅助集成": "Create AI writing integration",
+  "修改 AI 文字辅助草稿": "Edit AI writing draft",
+  "接入 OpenAI 兼容模型，仅处理用户明确确认的非敏感文字。":
+    "Connect an OpenAI-compatible model that processes only non-sensitive text explicitly approved by the user.",
+  "默认关闭；仅已发布的 LLM 集成可用于本人 INTERNAL 草稿":
+    "Disabled by default; only published LLM integrations can be used for your INTERNAL drafts",
+  "只发送用户明确确认的用途文字；不发送附件、文件名、审批意见或审计内容。每日每人最多 20 次，全局并发 2。":
+    "Only explicitly approved purpose text is sent. Attachments, filenames, approval comments and audit data are excluded. Limit: 20 requests per user daily and 2 globally concurrent.",
+  契约测试: "Contract test",
+  合成文字契约测试通过: "Synthetic text contract test passed",
+  请先完成模型契约测试: "Complete the model contract test first",
+  "凭据由主密钥加密保存，业务配置仅引用凭据 ID；轮换时请创建新凭据并发布新的配置版本。":
+    "Credentials are encrypted with the master key and business configuration stores only credential IDs. Create a new credential and publish a new configuration version to rotate it.",
+  仅系统管理员可录入或引用凭据:
+    "Only system administrators can add or reference credentials",
+  敏感值写入后不可读取: "Sensitive values cannot be read after being stored",
+  录入新的加密凭据: "Add encrypted credential",
+  录入秘密: "Add secret",
+  秘密名称: "Secret name",
+  秘密值: "Secret value",
+  凭据内容不会写入操作日志和接口响应:
+    "Credential values are never written to operation logs or API responses",
+  "保存成功后仅返回引用 ID，原始值不会再次展示。":
+    "After saving, only the reference ID is returned; the original value is never shown again.",
+  保存成功: "Saved successfully",
+  配置只读监控令牌并执行独立审计归档:
+    "Configure read-only monitoring tokens and run independent audit archiving",
+  监控接入: "Monitoring integration",
+  监控状态: "Monitoring status",
+  签发令牌: "Issue token",
+  "签发 Zabbix 只读令牌": "Issue Zabbix read-only token",
+  有效令牌: "Active tokens",
+  令牌名称: "Token name",
+  允许采集源: "Allowed collectors",
+  "允许采集源 CIDR（每行一个）": "Allowed collector CIDRs (one per line)",
+  "令牌至少 256 bit，只在创建后显示一次；每个来源最多 12 次/分钟。":
+    "Tokens are at least 256 bits and shown only once after creation; each source is limited to 12 requests per minute.",
+  审计归档: "Audit archive",
+  执行日归档: "Run daily archive",
+  执行审计日归档: "Run daily audit archive",
+  归档批次: "Archive batches",
+  事件数: "Event count",
+  "独立审计 S3 版本 ID": "Independent audit S3 Version ID",
+  "UTC 日归档时间窗": "UTC daily archive window",
+  "JSONL 写入独立版本化存储，记录事件范围、数量、SHA256 与独立密钥 HMAC 签名；是否具备 WORM 以存储侧配置为准。":
+    "JSONL is written to independent versioned storage with event range, count, SHA256 and a separate-key HMAC signature. WORM capability depends on storage configuration.",
 };
