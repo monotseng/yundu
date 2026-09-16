@@ -103,6 +103,9 @@ export const enUS = {
 } as const;
 
 export const enUI: Record<string, string> = {
+  云渡: "Yundu",
+  文件交换平台: "File Exchange Platform",
+  云渡文件交换平台: "Yundu File Exchange Platform",
   首页概览: "Overview",
   我的申请: "My requests",
   新建交换: "New exchange",
@@ -259,6 +262,13 @@ export const enUI: Record<string, string> = {
   按任务逐项办理: "Process each task",
   待领取文件: "Files ready for pickup",
   仅在目标网络入口显示: "Visible only on the target portal",
+  "汇总我的交换申请、审批任务与待领取文件":
+    "Summary of my requests, approval tasks and files ready for pickup",
+  最近申请: "Recent requests",
+  查看全部: "View all",
+  数据联动: "Live data",
+  "统计数据每 30 秒刷新，并在重新进入页面时同步；文件仅能在目标网络入口领取。":
+    "Statistics refresh every 30 seconds and when the page becomes active. Files are available only from the target portal.",
   密级: "Classification",
   创建时间: "Created at",
   请求: "Request",

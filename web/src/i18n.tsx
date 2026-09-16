@@ -89,6 +89,10 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   };
   useEffect(() => {
     document.documentElement.lang = language;
+    document.title =
+      language === "en-US"
+        ? "Yundu File Exchange Platform"
+        : "云渡文件交换平台";
     translateDOM(document.body, language);
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
