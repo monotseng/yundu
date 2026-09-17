@@ -16,7 +16,7 @@ M2 提供组织与权限、受信门户边界、秘密存储以及版本化 S3 �
 
 存储版本只有在持久化的真实探测结果为 `PASSED` 后才能发布。办公与生产两套真实对象存储的联调证据需要企业环境，当前不将其标记为已通过。
 
-生产配置必须为 `security.trust_portal_header_from` 设置明确的代理 CIDR，并启用 HTTPS 与安全 Cookie。秘密应通过 `${NAME}` 从运行环境注入配置文件。
+交付配置为便于首次安装，将 `security.trust_portal_header_from` 默认设为全部 IPv4/IPv6 来源；门户 Origin 校验仍然生效。生产环境确认反向代理出口后，建议将该项收紧为明确的代理 CIDR，并启用 HTTPS 与安全 Cookie。秘密应通过 `${NAME}` 从运行环境注入配置文件。
 
 ## M2 API
 
@@ -37,4 +37,3 @@ M2 提供组织与权限、受信门户边界、秘密存储以及版本化 S3 �
 - `make build`：生成 `release/yundu-linux-arm64`，前端资源已嵌入。
 - 二进制 `--check-config`、`--start`、就绪探针与 `--stop`：通过。
 - 双对象存储真实凭据与权限：待企业环境联调。
-

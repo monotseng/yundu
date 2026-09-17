@@ -116,7 +116,7 @@ cd web && npm ci && npm run typecheck && npm run build
 生成 AMD64、ARM64 标准发行包：
 
 ```bash
-make release-package VERSION=1.0.0-rc.4
+make release-package VERSION=1.0.0-rc.5
 ```
 
 ## 文档
@@ -134,7 +134,7 @@ make release-package VERSION=1.0.0-rc.4
 
 ## 发布状态
 
-当前仓库已完成 M0～M9 开发里程碑。最新标准候选交付为 `v1.0.0-rc.4`。真实企业环境验收和生产高可用拓扑不在当前候选版本的已验证范围内。
+当前仓库已完成 M0～M9 开发里程碑。最新标准候选交付为 `v1.0.0-rc.5`。真实企业环境验收和生产高可用拓扑不在当前候选版本的已验证范围内。
 
 ## 安全提示
 

@@ -22,7 +22,8 @@ database:
 security:
   master_key: "${YUNDU_MASTER_KEY}"
   cookie_secure: true
-  trust_portal_header_from: ["10.20.30.0/24"]
+  # 开箱默认允许任意 IPv4/IPv6 来源声明门户域；熟悉网络边界后建议收紧为反向代理网段。
+  trust_portal_header_from: ["0.0.0.0/0", "::/0"]
 
 portals:
   office:

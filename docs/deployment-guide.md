@@ -1,6 +1,6 @@
 # 云渡文件交换平台部署指南
 
-本文适用于 `v1.0.0-rc.4` 单体发行包。当前部署不依赖 Docker、Compose、Node.js、Redis或消息队列；前端资源、数据库迁移和后台任务均包含在 `bin/yundu-server` 中。
+本文适用于 `v1.0.0-rc.5` 单体发行包。当前部署不依赖 Docker、Compose、Node.js、Redis或消息队列；前端资源、数据库迁移和后台任务均包含在 `bin/yundu-server` 中。
 
 ## 1. 部署拓扑
 
@@ -18,9 +18,9 @@
 sudo useradd --system --home /opt/yundu --shell /usr/sbin/nologin yundu
 sudo mkdir -p /opt/yundu /etc/yundu /var/log/yundu /run/yundu
 sudo chown yundu:yundu /opt/yundu /var/log/yundu /run/yundu
-tar -xzf yundu-server-v1.0.0-rc.4-linux-arm64.tar.gz
-sudo cp yundu-server-v1.0.0-rc.4-linux-arm64/bin/yundu-server /opt/yundu/
-sudo cp yundu-server-v1.0.0-rc.4-linux-arm64/config/config.yaml /etc/yundu/config.yaml
+tar -xzf yundu-server-v1.0.0-rc.5-linux-arm64.tar.gz
+sudo cp yundu-server-v1.0.0-rc.5-linux-arm64/bin/yundu-server /opt/yundu/
+sudo cp yundu-server-v1.0.0-rc.5-linux-arm64/config/config.yaml /etc/yundu/config.yaml
 sudo chmod 0755 /opt/yundu/yundu-server
 sudo chmod 0640 /etc/yundu/config.yaml
 ```
@@ -47,7 +47,7 @@ export YUNDU_MASTER_KEY='固定保存的至少 32 字节随机主密钥'
 
 ## 4. 应用配置
 
-编辑 `/etc/yundu/config.yaml`，至少替换 MySQL 地址、管理基准地址、可信代理网段以及两个门户 Origin。`server.trusted_proxies` 和 `security.trust_portal_header_from` 只能填写实际 Nginx 出口地址或网段，不能配置为任意来源。
+编辑 `/etc/yundu/config.yaml`，至少替换 MySQL 地址、管理基准地址以及两个门户 Origin。交付配置中的 `security.trust_portal_header_from` 默认包含 `0.0.0.0/0` 和 `::/0`，便于首次安装直接访问；它只放开门户域请求头的来源，门户 Origin 校验仍然生效。生产环境完成联调后，建议将其收紧为实际 Nginx 出口地址或网段。`server.trusted_proxies` 仅在需要解析代理转发的客户端地址时配置，并应始终限定为实际可信代理。
 
 ```bash
 sudo -u yundu -E /opt/yundu/yundu-server --check-config --config /etc/yundu/config.yaml

@@ -15,8 +15,8 @@
 ## 2. 解压与目录
 
 ```bash
-tar -xzf yundu-server-v1.0.0-rc.4-linux-arm64.tar.gz
-cd yundu-server-v1.0.0-rc.4-linux-arm64
+tar -xzf yundu-server-v1.0.0-rc.5-linux-arm64.tar.gz
+cd yundu-server-v1.0.0-rc.5-linux-arm64
 ```
 
 ```text
@@ -59,7 +59,7 @@ export YUNDU_MASTER_KEY="$(openssl rand -base64 32)"
 - `server.public_base_url`：管理访问基准地址。
 - `database`：MySQL 地址、库名、账号和连接池。
 - `server.trusted_proxies`：可信反向代理网段。
-- `security.trust_portal_header_from`：允许声明入口安全域的代理网段。
+- `security.trust_portal_header_from`：允许声明入口安全域的来源网段。交付配置默认允许全部 IPv4/IPv6 来源，确保首次安装可用；生产联调完成后可收紧为实际反向代理网段。
 - `portals.office.origin`：办公入口完整 Origin。
 - `portals.production.origin`：生产入口完整 Origin。
 - `limits`：并发和文件限制；办公到生产的硬限制不能调高。
