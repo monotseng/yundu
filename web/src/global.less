@@ -29,6 +29,18 @@ body {
   box-shadow: 4px 0 20px rgba(16, 47, 74, 0.04);
   position: relative;
 }
+.app-shell > .app-sider {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+.app-sider .ant-layout-sider-children {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+}
 .sider-brand {
   height: 64px;
   padding: 10px 18px;
@@ -79,6 +91,12 @@ body {
   padding: 12px 10px;
   border-inline-end: 0 !important;
 }
+.app-sider .sider-menu {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 .ant-menu-light .ant-menu-item {
   margin-block: 4px;
   border-radius: 7px;
@@ -97,12 +115,15 @@ body {
   color: #087d75;
 }
 .sider-foot {
-  position: absolute;
-  bottom: 20px;
-  left: 24px;
+  flex: none;
+  min-height: 44px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--border);
+  background: #fff;
   color: var(--muted);
   font-size: 12px;
-  line-height: 1.7;
+  line-height: 18px;
+  white-space: nowrap;
 }
 .topbar {
   height: 64px;

@@ -15,7 +15,15 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import { Link, Outlet, useLocation, useNavigate } from "@umijs/renderer-react";
-import { Avatar, Button, Layout as AntLayout, Menu, Space, Tag } from "antd";
+import {
+  Avatar,
+  Button,
+  Layout as AntLayout,
+  Menu,
+  Space,
+  Tag,
+  Tooltip,
+} from "antd";
 import Brand from "@/components/Brand";
 import { useEffect, useState } from "react";
 import { getRuntime, type Runtime } from "@/api/runtime";
@@ -115,7 +123,7 @@ const navItems: any[] = [
 export default function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { language, toggleLanguage } = useI18n();
+  const { language, t, toggleLanguage } = useI18n();
   const [runtime, setRuntime] = useState<Runtime>();
   const [user, setUser] = useState<{
     display_name: string;
@@ -161,7 +169,24 @@ export default function AppLayout() {
         ? {
             ...entry,
             children: entry.children.map(
-              ({ permissions: __, ...child }: any) => child,
+              ({ permissions: __, ...child }: any) => {
+                const label = child.label?.props?.children;
+                return {
+                  ...child,
+                  label:
+                    language === "en-US" ? (
+                      <Tooltip
+                        placement="right"
+                        title={t(String(label))}
+                        mouseEnterDelay={0.35}
+                      >
+                        <Link to={child.key}>{t(String(label))}</Link>
+                      </Tooltip>
+                    ) : (
+                      child.label
+                    ),
+                };
+              },
             ),
           }
         : entry,
@@ -191,11 +216,12 @@ export default function AppLayout() {
   if (checking) return <div className="session-loading">正在验证会话…</div>;
   return (
     <AntLayout className="app-shell">
-      <Sider width={232} theme="light">
+      <Sider width={232} theme="light" className="app-sider">
         <div className="sider-brand">
           <Brand />
         </div>
         <Menu
+          className="sider-menu"
           mode="inline"
           selectedKeys={[location.pathname]}
           defaultOpenKeys={
@@ -204,9 +230,9 @@ export default function AppLayout() {
           items={items}
         />
         <div className="sider-foot">
-          纯 Web 安全交换
-          <br />
-          <small>版本 {runtime?.version || "dev"}</small>
+          <small>
+            {t("版本")} {runtime?.version || "dev"}
+          </small>
         </div>
       </Sider>
       <AntLayout>
