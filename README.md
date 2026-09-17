@@ -1,56 +1,139 @@
-# 云渡文件交换平台
+# 云渡（Yundu）文件交换平台
 
-当前开发里程碑：M9（V1.0 开发交付收口）。详见 [部署指南](docs/deployment-guide.md)、[产品功能说明](docs/product-guide.md)、[安装与使用手册](docs/user-guide.md)、[M9 交付说明](docs/m9-delivery.md)与 [AC01～AC64 证据矩阵](docs/ac01-ac64-evidence.md)。
+云渡是面向企业办公区与生产区的受控文件交换平台。它通过双向存储复制、审批流程、内容检查、目标入口领取和全链路审计，让跨安全域文件流转可管理、可追踪。
 
-生产与办公网络文件交换及审批。
+![云渡英文首页概览](docs/image/yundu/en/Snipaste_2026-09-17_10-48-42.png)
 
-当前仓库按 M0～M9 分阶段实现。当前运行方式为配置化外部 MySQL + 单体二进制，不依赖 Docker 或 Compose。
+> 当前版本为 V1.0 发布候选版。生产使用前仍需在企业预生产环境完成真实对象存储、Authenticator、ClamAV、通知、监控和负载验证。
 
-## 本地启动
+## 核心能力
+
+- 办公到生产、生产到办公双向文件交换。
+- 部门、团队、用户、业务系统及范围化角色权限。
+- 可视化审批流程编排、校验、模拟、发布和方向绑定。
+- 文件哈希、UTF-8、控制字节、二进制特征和内容规则检查。
+- S3/MinIO 精确对象版本复制与目标侧完整性复核。
+- 按申请单集中展示、申请人从目标网络入口领取文件。
+- 集成配置、站内通知、企业微信、监控和审计归档。
+- 中文、英文界面切换与基于权限的菜单隔离。
+
+## 产品界面
+
+| 登录 | 新建交换 |
+|---|---|
+| ![登录页面](docs/image/yundu/zh/Snipaste_2026-09-17_09-31-46.png) | ![新建交换](docs/image/yundu/zh/Snipaste_2026-09-17_09-34-03.png) |
+
+| 集成配置 | 审计中心 |
+|---|---|
+| ![集成配置](docs/image/yundu/zh/Snipaste_2026-09-17_09-33-50.png) | ![Audit center](docs/image/yundu/en/Snipaste_2026-09-17_10-58-11.png) |
+
+## 架构
+
+```text
+办公入口 ─┐                         ┌─ MySQL 8.4
+          ├─ Nginx / HTTPS ─ 云渡单体服务 ├─ 办公区 S3/MinIO
+生产入口 ─┘      　　　　　(API + Web + Worker) └─ 生产区 S3/MinIO
+```
+
+- Go 模块化单体提供 API、后台任务及嵌入式 Web 前端。
+- React、TypeScript 和 Ant Design 构建后的资源嵌入同一二进制。
+- MySQL 保存业务状态、会话、审计、任务、租约和监控聚合。
+- 文件正文保存在启用版本控制的 S3/MinIO，不进入数据库。
+- 当前部署不依赖 Docker、Compose、Redis、消息队列或终端 Agent。
+
+## 运行边界
+
+- 办公到生产仅接受 `.sql`、`.csv`。
+- 单文件不超过 30 MiB，每单最多 5 个，合计不超过 150 MiB。
+- 平台不执行上传的 SQL、脚本或其他文件。
+- 只有申请人能在目标入口领取；管理员没有隐含下载权限。
+- 杀毒默认关闭，关闭时明确记录为跳过，不宣称扫描通过。
+- 文件原名与对象 Key 分离，审批提交后冻结 Version ID 与 SHA-256。
+
+## 快速开始
+
+### 环境要求
+
+- Go 1.26（从源码构建时）
+- Node.js 与 npm（从源码构建前端时）
+- MySQL 8.4
+- 两侧均可访问的版本化 S3/MinIO 存储
+
+### 构建单体程序
 
 ```bash
+git clone <your-repository-url>
+cd yundu
 cp configs/config.example.yaml configs/config.local.yaml
-export YUNDU_DB_PASSWORD='本地数据库密码'
-export YUNDU_MASTER_KEY='部署时生成并固定保存的32字节Base64主密钥'
-./release/yundu-linux-arm64 --migrate --config configs/config.local.yaml
-./release/yundu-linux-arm64 --bootstrap-admin admin --display-name '系统管理员' --config configs/config.local.yaml
-./release/yundu-linux-arm64 --start --config configs/config.local.yaml --pid-file yundu.pid --log-file yundu.log
-```
-
-首次引导命令仅在用户表为空时可执行，激活凭据只在终端显示一次，默认 24 小时有效。使用办公或生产入口打开 `/#/activate`，设置密码并用 Microsoft Authenticator 扫描平台内部生成的二维码。绑定成功不会直接创建业务会话，必须重新进行密码和 TOTP 登录。主密钥必须稳定保存；更换或丢失会导致既有 TOTP 秘钥无法解密。
-
-查看状态与停止：
-
-```bash
-./release/yundu-linux-arm64 --status --pid-file yundu.pid
-./release/yundu-linux-arm64 --stop --pid-file yundu.pid
-```
-
-访问 `http://127.0.0.1:9080`。不传 `--start` 时以前台模式运行，仍会创建 PID 文件并可由另一个进程使用 `--stop` 优雅停止。开发模式前端可独立启动：
-
-```bash
-cd web
-npm ci
-npm run dev
-```
-
-## 单体构建
-
-```bash
 make build
-./release/yundu-linux-arm64 --config configs/config.local.yaml
 ```
 
-`make build` 根据当前架构生成唯一发行文件 `release/yundu-linux-<arch>`；`make build-all` 同时生成 AMD64、ARM64 版本。数据库迁移、服务启停和嵌入式前端都包含在该程序内，运行时不需要 Node.js。数据库地址、账号、密码、库名和连接池均来自 YAML；生产密码建议写成 `${YUNDU_DB_PASSWORD}`。
+构建产物为 `release/yundu-linux-<arch>`，前端资源已经嵌入，运行服务器无需安装 Node.js。
 
-开发阶段和未联调项见 [实施计划](docs/implementation-plan.md)，接口见 [OpenAPI](api/openapi.yaml)。
+### 配置和初始化
 
-## 发行包
+```bash
+export YUNDU_DB_PASSWORD='数据库密码'
+export YUNDU_MASTER_KEY="$(openssl rand -base64 32)"
 
-构建 AMD64、ARM64 两个标准交付包：
+./release/yundu-linux-arm64 --check-config --config configs/config.local.yaml
+./release/yundu-linux-arm64 --migrate --config configs/config.local.yaml
+./release/yundu-linux-arm64 --bootstrap-admin admin \
+  --display-name '系统管理员' --config configs/config.local.yaml
+```
+
+`YUNDU_MASTER_KEY` 只能在首次部署时生成一次，之后必须固定保存在密码保险库中。首次管理员激活凭据也只显示一次。
+
+### 启动和停止
+
+```bash
+./release/yundu-linux-arm64 --start \
+  --config configs/config.local.yaml \
+  --pid-file runtime/yundu.pid \
+  --log-file runtime/yundu.log
+
+./release/yundu-linux-arm64 --status --pid-file runtime/yundu.pid
+./release/yundu-linux-arm64 --stop --pid-file runtime/yundu.pid
+```
+
+健康检查：
+
+```bash
+curl -fsS http://127.0.0.1:9080/health/live
+curl -fsS http://127.0.0.1:9080/health/ready
+```
+
+## 验证
+
+```bash
+go test ./...
+go vet ./...
+cd web && npm ci && npm run typecheck && npm run build
+```
+
+生成 AMD64、ARM64 标准发行包：
 
 ```bash
 make release-package VERSION=1.0.0-rc.3
 ```
 
-产物写入 `release/`，每个压缩包包含 `bin/yundu-server`、生产初始化配置、秘密环境变量示例和必要文档，同时生成 SHA-256 校验文件。
+## 文档
+
+- [产品功能说明](docs/product-guide.md)
+- [安装与使用手册](docs/user-guide.md)
+- [部署指南](docs/deployment-guide.md)
+- [运行维护手册](docs/operations-runbook.md)
+- [身份认证运行手册](docs/identity-operations.md)
+- [数据库、密钥与灾难恢复](docs/database-recovery.md)
+- [安全验证与未关闭风险](docs/security-validation.md)
+- [容量与性能验证方案](docs/performance-validation.md)
+- [OpenAPI](api/openapi.yaml)
+- [V1.0 验收证据矩阵](docs/ac01-ac64-evidence.md)
+
+## 发布状态
+
+当前仓库已完成 M0～M9 开发里程碑。最近一次标准候选交付为 `v1.0.0-rc.3`；其后的修正位于 `main` 分支。真实企业环境验收和生产高可用拓扑不在当前候选版本的已验证范围内。
+
+## 安全提示
+
+不要把数据库密码、主密钥、S3 凭据、Webhook、API Key、激活凭据或真实 TOTP 截图提交到仓库。生产配置应使用 `${ENV_NAME}` 占位并由进程管理器或企业秘密系统注入。

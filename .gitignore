@@ -7,3 +7,7 @@
 *.pid
 *.log
 .env
+# Local authentication screenshots contain account or one-time-code data.
+/docs/image/yundu/en/Snipaste_2026-09-17_09-35-43.png
+/docs/image/yundu/en/Snipaste_2026-09-17_10-48-31.png
+/docs/image/yundu/zh/Snipaste_2026-09-17_09-32-18.png
