@@ -58,13 +58,17 @@ function translateDOM(root: ParentNode, language: Language) {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes: Text[] = [];
   while (walker.nextNode()) nodes.push(walker.currentNode as Text);
-  for (const node of nodes)
-    node.nodeValue = translateInterfaceText(node.nodeValue || "", language);
+  for (const node of nodes) {
+    const translated = translateInterfaceText(node.nodeValue || "", language);
+    if (translated !== node.nodeValue) node.nodeValue = translated;
+  }
   if (root instanceof Element) {
     for (const attribute of ["placeholder", "title", "aria-label"]) {
       const current = root.getAttribute(attribute);
-      if (current)
-        root.setAttribute(attribute, translateInterfaceText(current, language));
+      if (current) {
+        const translated = translateInterfaceText(current, language);
+        if (translated !== current) root.setAttribute(attribute, translated);
+      }
     }
   }
   for (const element of root.querySelectorAll?.(
@@ -72,11 +76,10 @@ function translateDOM(root: ParentNode, language: Language) {
   ) || []) {
     for (const attribute of ["placeholder", "title", "aria-label"]) {
       const current = element.getAttribute(attribute);
-      if (current)
-        element.setAttribute(
-          attribute,
-          translateInterfaceText(current, language),
-        );
+      if (current) {
+        const translated = translateInterfaceText(current, language);
+        if (translated !== current) element.setAttribute(attribute, translated);
+      }
     }
   }
 }
@@ -98,17 +101,44 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     translateDOM(document.body, language);
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
+        if (mutation.type === "characterData") {
+          const node = mutation.target as Text;
+          const translated = translateInterfaceText(
+            node.nodeValue || "",
+            language,
+          );
+          if (translated !== node.nodeValue) node.nodeValue = translated;
+          continue;
+        }
+        if (mutation.type === "attributes") {
+          const element = mutation.target as Element;
+          const attribute = mutation.attributeName;
+          if (!attribute) continue;
+          const current = element.getAttribute(attribute);
+          if (!current) continue;
+          const translated = translateInterfaceText(current, language);
+          if (translated !== current)
+            element.setAttribute(attribute, translated);
+          continue;
+        }
         for (const node of mutation.addedNodes) {
-          if (node.nodeType === Node.TEXT_NODE)
-            node.nodeValue = translateInterfaceText(
+          if (node.nodeType === Node.TEXT_NODE) {
+            const translated = translateInterfaceText(
               node.nodeValue || "",
               language,
             );
-          else if (node instanceof Element) translateDOM(node, language);
+            if (translated !== node.nodeValue) node.nodeValue = translated;
+          } else if (node instanceof Element) translateDOM(node, language);
         }
       }
     });
-    observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["placeholder", "title", "aria-label"],
+      characterData: true,
+      childList: true,
+      subtree: true,
+    });
     return () => observer.disconnect();
   }, [language]);
   const value = useMemo(
