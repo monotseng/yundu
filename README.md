@@ -1,6 +1,6 @@
 # 云渡文件交换平台
 
-当前开发里程碑：M9（V1.0 开发交付收口）。详见 [产品功能说明](docs/product-guide.md)、[安装与使用手册](docs/user-guide.md)、[M9 交付说明](docs/m9-delivery.md)与 [AC01～AC64 证据矩阵](docs/ac01-ac64-evidence.md)。
+当前开发里程碑：M9（V1.0 开发交付收口）。详见 [部署指南](docs/deployment-guide.md)、[产品功能说明](docs/product-guide.md)、[安装与使用手册](docs/user-guide.md)、[M9 交付说明](docs/m9-delivery.md)与 [AC01～AC64 证据矩阵](docs/ac01-ac64-evidence.md)。
 
 生产与办公网络文件交换及审批。
 
@@ -50,7 +50,7 @@ make build
 构建 AMD64、ARM64 两个标准交付包：
 
 ```bash
-make release-package VERSION=1.0.0-rc.1
+make release-package VERSION=1.0.0-rc.3
 ```
 
 产物写入 `release/`，每个压缩包包含 `bin/yundu-server`、生产初始化配置、秘密环境变量示例和必要文档，同时生成 SHA-256 校验文件。

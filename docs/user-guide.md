@@ -15,8 +15,8 @@
 ## 2. 解压与目录
 
 ```bash
-tar -xzf yundu-server-v1.0.0-rc.1-linux-arm64.tar.gz
-cd yundu-server-v1.0.0-rc.1-linux-arm64
+tar -xzf yundu-server-v1.0.0-rc.3-linux-arm64.tar.gz
+cd yundu-server-v1.0.0-rc.3-linux-arm64
 ```
 
 ```text
@@ -58,7 +58,7 @@ export YUNDU_MASTER_KEY="$(openssl rand -base64 32)"
 - `server.listen_address`：服务监听地址。
 - `server.public_base_url`：管理访问基准地址。
 - `database`：MySQL 地址、库名、账号和连接池。
-- `security.trusted_proxies`：可信反向代理网段。
+- `server.trusted_proxies`：可信反向代理网段。
 - `security.trust_portal_header_from`：允许声明入口安全域的代理网段。
 - `portals.office.origin`：办公入口完整 Origin。
 - `portals.production.origin`：生产入口完整 Origin。
@@ -133,10 +133,10 @@ curl -fsS http://127.0.0.1:9080/health/ready
 
 ### 9.4 切换界面语言
 
-登录后点击右上角用户区域中的地球图标和 `EN`/`中文` 按钮，可以在中文与英文之间即时切换。选择结果保存在浏览器本地，下次访问和重新登录后继续使用。
+登录页、激活页或登录后的右上角均提供地球图标和 `en`/`zh` 按钮，可以在中文与英文之间即时切换。按钮显示的是可切换到的目标语言；选择结果保存在浏览器本地，下次访问和重新登录后继续使用。
 
 ## 10. 升级与回滚注意事项
 
 升级前备份 MySQL 和对象存储配置，停止旧服务，替换二进制后重新启动。数据库迁移只向前执行；如需回退程序版本，应先确认旧程序兼容已经升级的数据库结构，不要直接删除迁移记录。
 
-更完整的日常操作、故障处理和数据库恢复流程参见 `docs/operations-runbook.md` 与 `docs/database-recovery.md`。
+完整部署步骤参见 `docs/deployment-guide.md`；日常操作、故障处理和数据库恢复流程参见 `docs/operations-runbook.md` 与 `docs/database-recovery.md`。

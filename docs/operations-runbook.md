@@ -20,7 +20,7 @@ export YUNDU_MASTER_KEY='至少 32 字节随机主密钥，由企业秘密系统
 
 1. 校准应用、MySQL、对象存储、Authenticator 手机和 Zabbix 的 UTC 时间。
 2. 以备份专用账号完成 MySQL 全量备份，记录 GTID/binlog 位点；验证恢复到隔离环境。
-3. 执行 `--check-config` 与 `--migrate`，确认 schema version 为 16。
+3. 执行 `--check-config` 与 `--migrate`，确认 schema version 为 19。
 4. 首次部署用 `--bootstrap-admin` 获取一次性激活凭据，完成密码和真实手机 TOTP 绑定。
 5. 分别配置办公/生产版本化对象存储，再发布方向通道；默认保持 ClamAV、AI 关闭。
 6. 配置独立审计桶与签名秘密；企业微信、SMTP、AI 必须先用明确的合成目标测试，测试通过后才发布。

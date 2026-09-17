@@ -3,7 +3,7 @@ set -euo pipefail
 
 release_version="${1:-}"
 if [[ -z "${release_version}" || ! "${release_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
-  echo "usage: $0 <version, e.g. 1.0.0-rc.1>" >&2
+  echo "usage: $0 <version, e.g. 1.0.0-rc.3>" >&2
   exit 2
 fi
 
@@ -36,7 +36,7 @@ for architecture in "${architectures[@]}"; do
   cp deploy/release/config.yaml "${package_root}/config/config.yaml"
   cp deploy/release/env.example "${package_root}/config/env.example"
   cp README.md "${package_root}/README.md"
-  cp docs/product-guide.md docs/user-guide.md docs/operations-runbook.md docs/database-recovery.md "${package_root}/docs/"
+  cp docs/deployment-guide.md docs/product-guide.md docs/user-guide.md docs/operations-runbook.md docs/database-recovery.md docs/release-notes-v1.0.0-rc.3.md "${package_root}/docs/"
   chmod 0755 "${package_root}/bin/yundu-server"
   tar -C "${work_dir}" -czf "${release_dir}/${package_name}.tar.gz" "${package_name}"
 done
