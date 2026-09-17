@@ -21,13 +21,11 @@ Yundu is a controlled file exchange platform for enterprise office and productio
 
 ## Screenshots
 
-| Sign in | New exchange request |
+| Sign in | Overview |
 |---|---|
-| ![Sign in](docs/image/yundu/en/Snipaste_2026-09-17_09-34-44.png) | ![New exchange request](docs/image/yundu/zh/Snipaste_2026-09-17_09-34-03.png) |
+| ![Sign in](docs/image/yundu/en/Snipaste_2026-09-17_09-34-44.png) | ![Overview](docs/image/yundu/en/Snipaste_2026-09-17_10-48-42.png) |
 
-| Overview | Audit center |
-|---|---|
-| ![Overview](docs/image/yundu/en/Snipaste_2026-09-17_10-48-42.png) | ![Audit center](docs/image/yundu/en/Snipaste_2026-09-17_10-58-11.png) |
+![Audit center](docs/image/yundu/en/Snipaste_2026-09-17_10-58-11.png)
 
 ## Architecture
 

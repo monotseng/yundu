@@ -4,7 +4,7 @@
 
 云渡是面向企业办公区与生产区的受控文件交换平台。它通过双向存储复制、审批流程、内容检查、目标入口领取和全链路审计，让跨安全域文件流转可管理、可追踪。
 
-![云渡英文首页概览](docs/image/yundu/en/Snipaste_2026-09-17_10-48-42.png)
+![云渡首页概览](docs/image/yundu/zh/Snipaste_2026-09-17_09-33-06.png)
 
 > 当前版本为 V1.0 发布候选版。生产使用前仍需在企业预生产环境完成真实对象存储、Authenticator、ClamAV、通知、监控和负载验证。
 
@@ -25,9 +25,9 @@
 |---|---|
 | ![登录页面](docs/image/yundu/zh/Snipaste_2026-09-17_09-31-46.png) | ![新建交换](docs/image/yundu/zh/Snipaste_2026-09-17_09-34-03.png) |
 
-| 集成配置 | 审计中心 |
+| 首页概览 | 集成配置 |
 |---|---|
-| ![集成配置](docs/image/yundu/zh/Snipaste_2026-09-17_09-33-50.png) | ![Audit center](docs/image/yundu/en/Snipaste_2026-09-17_10-58-11.png) |
+| ![首页概览](docs/image/yundu/zh/Snipaste_2026-09-17_09-33-06.png) | ![集成配置](docs/image/yundu/zh/Snipaste_2026-09-17_09-33-50.png) |
 
 ## 架构
 
