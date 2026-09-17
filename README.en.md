@@ -116,7 +116,7 @@ cd web && npm ci && npm run typecheck && npm run build
 Build standard AMD64 and ARM64 release packages:
 
 ```bash
-make release-package VERSION=1.0.0-rc.3
+make release-package VERSION=1.0.0-rc.4
 ```
 
 ## Documentation
@@ -134,7 +134,7 @@ make release-package VERSION=1.0.0-rc.3
 
 ## Release Status
 
-The repository has completed development milestones M0 through M9. The latest standard release candidate is `v1.0.0-rc.3`; subsequent fixes are available on `main`. Enterprise-environment acceptance and production high-availability topology are not claimed as validated in the current release candidate.
+The repository has completed development milestones M0 through M9. The latest standard release candidate is `v1.0.0-rc.4`. Enterprise-environment acceptance and production high-availability topology are not claimed as validated in the current release candidate.
 
 ## Security Notice
 

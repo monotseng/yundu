@@ -15,8 +15,8 @@
 ## 2. 解压与目录
 
 ```bash
-tar -xzf yundu-server-v1.0.0-rc.3-linux-arm64.tar.gz
-cd yundu-server-v1.0.0-rc.3-linux-arm64
+tar -xzf yundu-server-v1.0.0-rc.4-linux-arm64.tar.gz
+cd yundu-server-v1.0.0-rc.4-linux-arm64
 ```
 
 ```text

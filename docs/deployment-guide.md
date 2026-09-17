@@ -1,6 +1,6 @@
 # 云渡文件交换平台部署指南
 
-本文适用于 `v1.0.0-rc.3` 单体发行包。当前部署不依赖 Docker、Compose、Node.js、Redis或消息队列；前端资源、数据库迁移和后台任务均包含在 `bin/yundu-server` 中。
+本文适用于 `v1.0.0-rc.4` 单体发行包。当前部署不依赖 Docker、Compose、Node.js、Redis或消息队列；前端资源、数据库迁移和后台任务均包含在 `bin/yundu-server` 中。
 
 ## 1. 部署拓扑
 
@@ -18,9 +18,9 @@
 sudo useradd --system --home /opt/yundu --shell /usr/sbin/nologin yundu
 sudo mkdir -p /opt/yundu /etc/yundu /var/log/yundu /run/yundu
 sudo chown yundu:yundu /opt/yundu /var/log/yundu /run/yundu
-tar -xzf yundu-server-v1.0.0-rc.3-linux-arm64.tar.gz
-sudo cp yundu-server-v1.0.0-rc.3-linux-arm64/bin/yundu-server /opt/yundu/
-sudo cp yundu-server-v1.0.0-rc.3-linux-arm64/config/config.yaml /etc/yundu/config.yaml
+tar -xzf yundu-server-v1.0.0-rc.4-linux-arm64.tar.gz
+sudo cp yundu-server-v1.0.0-rc.4-linux-arm64/bin/yundu-server /opt/yundu/
+sudo cp yundu-server-v1.0.0-rc.4-linux-arm64/config/config.yaml /etc/yundu/config.yaml
 sudo chmod 0755 /opt/yundu/yundu-server
 sudo chmod 0640 /etc/yundu/config.yaml
 ```

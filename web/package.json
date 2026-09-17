@@ -1,7 +1,34 @@
 {
   "name": "yundu-web",
   "private": true,
-  "scripts": {"dev":"max dev","build":"max build","typecheck":"tsc --noEmit"},
-  "dependencies": {"@ant-design/icons":"^5.4.0","@umijs/max":"^4.3.0","antd":"^5.20.6","react":"^18.3.1","react-dom":"^18.3.1"},
-  "devDependencies": {"@types/react":"^18.3.5","@types/react-dom":"^18.3.0","typescript":"^5.5.4"}
+  "scripts": {
+    "dev": "max dev",
+    "build": "max build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.4.0",
+    "@umijs/max": "4.7.18",
+    "antd": "^5.20.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.4"
+  },
+  "overrides": {
+    "axios": "1.20.0",
+    "immer": "9.0.6",
+    "node-fetch": "2.7.0",
+    "postcss": "8.5.28",
+    "send": "0.19.2",
+    "@umijs/preset-umi": {
+      "path-to-regexp": "1.9.0"
+    },
+    "react-router": {
+      "path-to-regexp": "1.9.0"
+    }
+  }
 }

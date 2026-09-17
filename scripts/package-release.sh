@@ -3,12 +3,17 @@ set -euo pipefail
 
 release_version="${1:-}"
 if [[ -z "${release_version}" || ! "${release_version}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
-  echo "usage: $0 <version, e.g. 1.0.0-rc.3>" >&2
+  echo "usage: $0 <version, e.g. 1.0.0-rc.4>" >&2
   exit 2
 fi
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 release_dir="${repo_root}/release"
+release_notes="${repo_root}/docs/release-notes-v${release_version}.md"
+if [[ ! -f "${release_notes}" ]]; then
+  echo "release notes not found: ${release_notes}" >&2
+  exit 2
+fi
 work_dir="$(mktemp -d "${TMPDIR:-/tmp}/yundu-release.XXXXXX")"
 trap 'rm -rf -- "${work_dir}"' EXIT
 
@@ -36,7 +41,13 @@ for architecture in "${architectures[@]}"; do
   cp deploy/release/config.yaml "${package_root}/config/config.yaml"
   cp deploy/release/env.example "${package_root}/config/env.example"
   cp README.md "${package_root}/README.md"
-  cp docs/deployment-guide.md docs/product-guide.md docs/user-guide.md docs/operations-runbook.md docs/database-recovery.md docs/release-notes-v1.0.0-rc.3.md "${package_root}/docs/"
+  cp README.en.md "${package_root}/README.en.md"
+  cp docs/deployment-guide.md docs/product-guide.md docs/user-guide.md docs/operations-runbook.md docs/database-recovery.md docs/frontend-dependency-audit.md "${release_notes}" "${package_root}/docs/"
+  printf 'version=v%s\nos=linux\narch=%s\nbinary=bin/yundu-server\nconfig=config/config.yaml\n' "${release_version}" "${architecture}" > "${package_root}/PLATFORM"
+  (
+    cd "${package_root}"
+    sha256sum bin/yundu-server config/config.yaml config/env.example > MANIFEST.sha256
+  )
   chmod 0755 "${package_root}/bin/yundu-server"
   tar -C "${work_dir}" -czf "${release_dir}/${package_name}.tar.gz" "${package_name}"
 done

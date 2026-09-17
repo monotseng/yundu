@@ -20,6 +20,6 @@
 
 ## 已知风险
 
-- 前端构建依赖树仍有上游安全告警；生产只嵌入静态产物，但正式发布前必须完成依赖升级、SBOM 和重新审计。
+- 前端已升级至 Umi 4.7.18，并通过兼容覆盖移除 Critical 告警及旧 Axios、Immer、Node Fetch 风险。重新审计仍有 36 项上游构建链告警（0 Critical、8 High、19 Moderate、9 Low），详见 `frontend-dependency-audit.md`；生产介质只包含编译后的静态资源，不包含 Node.js 或 `node_modules`。
 - 企业微信真实 @、SMTP 到达、Zabbix 导入、WORM、双存储删除和网络 ACL 依赖企业环境，当前没有通过证据。
 - 当前 Go HTTP 服务应只监听回环或受控内网，由企业 TLS 入口提供请求体/头大小及慢流策略；不能直接暴露公网。
