@@ -1,5 +1,7 @@
 # 云渡（Yundu）文件交换平台
 
+[简体中文](README.md) | [English](README.en.md)
+
 云渡是面向企业办公区与生产区的受控文件交换平台。它通过双向存储复制、审批流程、内容检查、目标入口领取和全链路审计，让跨安全域文件流转可管理、可追踪。
 
 ![云渡英文首页概览](docs/image/yundu/en/Snipaste_2026-09-17_10-48-42.png)
@@ -62,7 +64,7 @@
 ### 构建单体程序
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/monotseng/yundu.git
 cd yundu
 cp configs/config.example.yaml configs/config.local.yaml
 make build
