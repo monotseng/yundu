@@ -43,11 +43,13 @@ export function translateInterfaceText(
 
 type I18nValue = {
   language: Language;
+  t: (value: string) => string;
   setLanguage: (language: Language) => void;
   toggleLanguage: () => void;
 };
 const I18nContext = createContext<I18nValue>({
   language: "zh-CN",
+  t: (value) => value,
   setLanguage: () => undefined,
   toggleLanguage: () => undefined,
 });
@@ -112,6 +114,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo(
     () => ({
       language,
+      t: (value: string) => translateInterfaceText(value, language),
       setLanguage,
       toggleLanguage: () =>
         setLanguage(language === "zh-CN" ? "en-US" : "zh-CN"),
